@@ -1,0 +1,170 @@
+{
+  "log": {
+    "version": "1.2",
+    "creator": {"name": "MockHAR", "version": "1.0"},
+    "pages": [],
+    "entries": [
+      {
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:7770/rest/V1/categories",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "{\"id\":1,\"name\":\"Root\",\"children_data\":[{\"id\":2,\"name\":\"Default Category\"},{\"id\":3,\"name\":\"Beauty & Personal Care\"}]}"}
+        }
+      },
+      {
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:7770/rest/V1/products?searchCriteria[filter_groups][0][filters][0][field]=name&searchCriteria[filter_groups][0][filters][0][value]=Radiant+Tee",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [{"name": "searchCriteria[filter_groups][0][filters][0][field]", "value": "name"}],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "{\"items\":[{\"sku\":\"MH01\",\"name\":\"Radiant Tee\",\"price\":22.0,\"type_id\":\"simple\"},{\"sku\":\"MH02\",\"name\":\"Breathe-Easy Tank\",\"price\":34.0,\"type_id\":\"simple\"},{\"sku\":\"MH03\",\"name\":\"Stellar Solar Jacket\",\"price\":75.0,\"type_id\":\"configurable\"},{\"sku\":\"MH04\",\"name\":\"Argus All-Weather Tank\",\"price\":22.0,\"type_id\":\"simple\"}],\"total_count\":4}"}
+        }
+      },
+      {
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:7770/rest/V1/guest-carts",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "\"cart-abc123\""}
+        }
+      },
+      {
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:7770/rest/V1/guest-carts/cart-abc123/items",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [],
+          "postData": {"mimeType": "application/json", "text": "{\"cartItem\":{\"sku\":\"MH01\",\"qty\":1,\"quote_id\":\"cart-abc123\"}}"}
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "{\"item_id\":5,\"sku\":\"MH01\",\"qty\":1,\"name\":\"Radiant Tee\",\"price\":22.0,\"product_type\":\"simple\",\"quote_id\":\"cart-abc123\"}"}
+        }
+      },
+      {
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:7770/rest/V1/guest-carts/cart-abc123/totals",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "{\"grand_total\":22.0,\"subtotal\":22.0,\"items\":[{\"item_id\":5,\"price\":22.0,\"qty\":1,\"name\":\"Radiant Tee\"}]}"}
+        }
+      },
+      {
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:7770/rest/V1/integration/customer/token",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [],
+          "postData": {"mimeType": "application/json", "text": "{\"username\":\"emma.lopez@gmail.com\",\"password\":\"Password.1\"}"}
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "\"token-xyz789\""}
+        }
+      },
+      {
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:7770/rest/V1/guest-carts/cart-abc123/estimate-shipping-methods",
+          "headers": [
+            {"name": "Accept", "value": "application/json"},
+            {"name": "Content-Type", "value": "application/json"}
+          ],
+          "queryString": [],
+          "postData": {"mimeType": "application/json", "text": "{\"address\":{\"city\":\"New York\",\"region_id\":43,\"postcode\":\"10001\",\"country_id\":\"US\"}}"}
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/json"}],
+          "content": {"mimeType": "application/json", "text": "[{\"carrier_code\":\"flatrate\",\"method_code\":\"flatrate\",\"carrier_title\":\"Flat Rate\",\"method_title\":\"Fixed\",\"amount\":5.0,\"available\":true}]"}
+        }
+      },
+      {
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:7770/static/version123/frontend/Magento/luma/en_US/mage/gallery.js",
+          "headers": [{"name": "Accept", "value": "*/*"}],
+          "queryString": [],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "application/javascript"}],
+          "content": {"mimeType": "application/javascript", "text": "// gallery js code..."}
+        }
+      },
+      {
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:7770/media/catalog/product/m/h/mh01-black_main.jpg",
+          "headers": [{"name": "Accept", "value": "image/*"}],
+          "queryString": [],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "image/jpeg"}],
+          "content": {"mimeType": "image/jpeg", "text": ""}
+        }
+      },
+      {
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:7770/beauty-personal-care.html",
+          "headers": [{"name": "Accept", "value": "text/html"}],
+          "queryString": [],
+          "postData": null
+        },
+        "response": {
+          "status": 200,
+          "headers": [{"name": "Content-Type", "value": "text/html; charset=UTF-8"}],
+          "content": {"mimeType": "text/html", "text": "<html>...</html>"}
+        }
+      }
+    ]
+  }
+}

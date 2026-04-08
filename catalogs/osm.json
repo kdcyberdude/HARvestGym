@@ -1,0 +1,5286 @@
+[
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/capabilities",
+    "auth": "none",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/api/@version",
+      "/osm/api/@generator",
+      "/osm/api/version/@minimum",
+      "/osm/api/version/@maximum",
+      "/osm/api/area/@maximum",
+      "/osm/api/tracepoints/@per_page",
+      "/osm/api/waynodes/@maximum",
+      "/osm/api/changesets/@maximum_elements",
+      "/osm/status/@database",
+      "/osm/status/@api",
+      "/osm/status/@gpx"
+    ],
+    "notes": "Deprecated root-level alias; delegates to api/capabilities#show"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/versions",
+    "auth": "none",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/api/@version"
+    ],
+    "notes": "Returns list of supported API versions"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/capabilities",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/api/version/@minimum",
+      "/osm/api/version/@maximum",
+      "/osm/api/area/@maximum",
+      "/osm/api/tracepoints/@per_page",
+      "/osm/api/waynodes/@maximum",
+      "/osm/api/changesets/@maximum_elements",
+      "/osm/status/@database",
+      "/osm/status/@api",
+      "/osm/status/@gpx",
+      ".version.minimum",
+      ".version.maximum",
+      ".area.maximum"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/permissions",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/permissions/permission/@name",
+      ".permissions[]"
+    ],
+    "notes": "Returns empty list for unauthenticated; full list for basic-auth; OAuth-scoped list for token-based auth"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/changeset/create",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "osm/changeset": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "XML document with <osm><changeset><tag k='' v=''/></changeset></osm>"
+      }
+    },
+    "response_key_fields": [
+      "plain text: changeset id integer"
+    ],
+    "notes": "Returns new changeset ID as plain text"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/changeset/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {
+      "include_discussion": {
+        "type": "boolean",
+        "source": "TASK_SPEC",
+        "notes": "If present, includes comment discussion in response"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      "/osm/changeset/@created_at",
+      "/osm/changeset/@closed_at",
+      "/osm/changeset/@open",
+      "/osm/changeset/@user",
+      "/osm/changeset/@uid",
+      "/osm/changeset/@min_lat",
+      "/osm/changeset/@min_lon",
+      "/osm/changeset/@max_lat",
+      "/osm/changeset/@max_lon",
+      "/osm/changeset/@num_changes",
+      "/osm/changeset/@comments_count",
+      "/osm/changeset/tag/@k",
+      "/osm/changeset/tag/@v",
+      ".changeset.id",
+      ".changeset.created_at",
+      ".changeset.open",
+      ".changeset.tags"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/changeset/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/changeset": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "XML document updating changeset tags"
+      }
+    },
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      ".changeset.id"
+    ],
+    "notes": "Update changeset tags; must be the changeset's owner"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/changeset/{id}/close",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Returns 200 OK with empty body; idempotent"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/changeset/{id}/upload",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osmChange": {
+        "type": "XML osmChange document",
+        "source": "TASK_SPEC",
+        "notes": "Contains <create>, <modify>, <delete> sections with nodes/ways/relations"
+      }
+    },
+    "response_key_fields": [
+      "/diffResult/node/@old_id",
+      "/diffResult/node/@new_id",
+      "/diffResult/node/@new_version",
+      "/diffResult/way/@old_id",
+      "/diffResult/way/@new_id",
+      "/diffResult/way/@new_version",
+      "/diffResult/relation/@old_id",
+      "/diffResult/relation/@new_id",
+      "/diffResult/relation/@new_version"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/changeset/{id}/download",
+    "auth": "none",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osmChange/create/node/@id",
+      "/osmChange/modify/node/@id",
+      "/osmChange/delete/node/@id",
+      "/osmChange/create/way/@id",
+      "/osmChange/modify/way/@id",
+      "/osmChange/delete/way/@id"
+    ],
+    "notes": "Returns osmChange XML document"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/changeset/{id}/subscribe",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      ".changeset.id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/changeset/{id}/unsubscribe",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      ".changeset.id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/changesets",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Bounding box: min_lon,min_lat,max_lon,max_lat"
+      },
+      "user": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/{id}",
+        "from_field": "/osm/user/@id",
+        "notes": "Filter by user ID; mutually exclusive with display_name"
+      },
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Filter by display name; mutually exclusive with user"
+      },
+      "time": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "ISO 8601 datetime or comma-separated range"
+      },
+      "open": {
+        "type": "boolean",
+        "source": "TASK_SPEC",
+        "notes": "If any value, return only open changesets"
+      },
+      "closed": {
+        "type": "boolean",
+        "source": "TASK_SPEC",
+        "notes": "If any value, return only closed changesets"
+      },
+      "changesets": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated list of changeset IDs"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      "/osm/changeset/@user",
+      "/osm/changeset/@uid",
+      "/osm/changeset/@created_at",
+      "/osm/changeset/@open",
+      ".changesets[].id",
+      ".changesets[].uid"
+    ],
+    "notes": "Returns up to 100 changesets sorted by created_at DESC"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/changeset/{id}/comment",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/changeset/create",
+        "from_field": "plain text response body",
+        "notes": "Changeset ID; must be closed"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comment body; required"
+      }
+    },
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      ".changeset.id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/changeset/comment/{id}/hide",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/changeset/{id}",
+        "from_field": "/osm/changeset/discussion/comment/@id",
+        "notes": "Changeset comment ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      ".changeset.id"
+    ],
+    "notes": "Moderator-only: sets visible=false on comment"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/changeset/comment/{id}/unhide",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/changeset/{id}",
+        "from_field": "/osm/changeset/discussion/comment/@id",
+        "notes": "Changeset comment ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/changeset/@id",
+      ".changeset.id"
+    ],
+    "notes": "Moderator-only: sets visible=true on comment"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/node/create",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "osm/node": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "<osm><node changeset='id' lat='...' lon='...'><tag k='' v=''/></node></osm>"
+      }
+    },
+    "response_key_fields": [
+      "plain text: node id integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/node/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/node/create",
+        "from_field": "plain text response body",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/node/@id",
+      "/osm/node/@lat",
+      "/osm/node/@lon",
+      "/osm/node/@version",
+      "/osm/node/@changeset",
+      "/osm/node/@user",
+      "/osm/node/@uid",
+      "/osm/node/@visible",
+      "/osm/node/@timestamp",
+      "/osm/node/tag/@k",
+      "/osm/node/tag/@v",
+      ".elements[0].id",
+      ".elements[0].lat",
+      ".elements[0].lon",
+      ".elements[0].tags"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/node/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/node": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "Must include version attribute matching current version"
+      }
+    },
+    "response_key_fields": [
+      "plain text: new version integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "DELETE /api/0.6/node/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/node": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "Must include version attribute"
+      }
+    },
+    "response_key_fields": [
+      "plain text: new version integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/nodes",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {
+      "nodes": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated list of node IDs; required"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/node/@id",
+      "/osm/node/@lat",
+      "/osm/node/@lon",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/node/{id}/history",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/node/@version",
+      "/osm/node/@id",
+      ".elements[].version"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/node/{id}/{version}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      },
+      "version": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}/history",
+        "from_field": "/osm/node/@version",
+        "notes": "Version number"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/node/@id",
+      "/osm/node/@version",
+      "/osm/node/@lat",
+      "/osm/node/@lon"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/node/{id}/{version}/redact",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      },
+      "version": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}/history",
+        "from_field": "/osm/node/@version",
+        "notes": "Version to redact"
+      }
+    },
+    "query_params": {
+      "redaction": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Redaction ID; omit to unredact"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Moderator-only; returns 200 OK empty"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/node/{id}/ways",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/way/@id",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/node/{id}/relations",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@id",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/way/create",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "osm/way": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "<osm><way changeset='id'><nd ref='node_id'/><tag k='' v=''/></way></osm>"
+      }
+    },
+    "response_key_fields": [
+      "plain text: way id integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/way/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/way/create",
+        "from_field": "plain text response body",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/way/@id",
+      "/osm/way/@version",
+      "/osm/way/@changeset",
+      "/osm/way/nd/@ref",
+      "/osm/way/tag/@k",
+      "/osm/way/tag/@v",
+      ".elements[0].id",
+      ".elements[0].nodes",
+      ".elements[0].tags"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/way/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/way": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "Must include version attribute"
+      }
+    },
+    "response_key_fields": [
+      "plain text: new version integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "DELETE /api/0.6/way/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/way": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "Must include version attribute"
+      }
+    },
+    "response_key_fields": [
+      "plain text: new version integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/ways",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {
+      "ways": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated list of way IDs; required"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/way/@id",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/way/{id}/full",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/node/@id",
+      "/osm/way/@id",
+      ".elements[].type",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/way/{id}/history",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/way/@version",
+      ".elements[].version"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/way/{id}/{version}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      },
+      "version": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}/history",
+        "from_field": "/osm/way/@version",
+        "notes": "Version number"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/way/@id",
+      "/osm/way/@version"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/way/{id}/{version}/redact",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      },
+      "version": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}/history",
+        "from_field": "/osm/way/@version",
+        "notes": "Version to redact"
+      }
+    },
+    "query_params": {
+      "redaction": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Redaction ID; omit to unredact"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Moderator-only"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/way/{id}/relations",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@id",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/relation/create",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "osm/relation": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "<osm><relation changeset='id'><member type='' ref='' role=''/><tag k='' v=''/></relation></osm>"
+      }
+    },
+    "response_key_fields": [
+      "plain text: relation id integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/relation/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "PUT /api/0.6/relation/create",
+        "from_field": "plain text response body",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@id",
+      "/osm/relation/@version",
+      "/osm/relation/member/@type",
+      "/osm/relation/member/@ref",
+      "/osm/relation/member/@role",
+      "/osm/relation/tag/@k",
+      "/osm/relation/tag/@v",
+      ".elements[0].id",
+      ".elements[0].members",
+      ".elements[0].tags"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/relation/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/relation": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "Must include version attribute"
+      }
+    },
+    "response_key_fields": [
+      "plain text: new version integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "DELETE /api/0.6/relation/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/relation": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "Must include version attribute"
+      }
+    },
+    "response_key_fields": [
+      "plain text: new version integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/relations",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {
+      "relations": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated list of relation IDs; required"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@id",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/relation/{id}/full",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/node/@id",
+      "/osm/way/@id",
+      "/osm/relation/@id",
+      ".elements[].type",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/relation/{id}/history",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@version",
+      ".elements[].version"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/relation/{id}/{version}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      },
+      "version": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}/history",
+        "from_field": "/osm/relation/@version",
+        "notes": "Version number"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@id",
+      "/osm/relation/@version"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/relation/{id}/{version}/redact",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      },
+      "version": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}/history",
+        "from_field": "/osm/relation/@version",
+        "notes": "Version to redact"
+      }
+    },
+    "query_params": {
+      "redaction": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Redaction ID; omit to unredact"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Moderator-only"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/relation/{id}/relations",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/relation/@id",
+      ".elements[].id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/map",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "min_lon,min_lat,max_lon,max_lat; required; max area ~0.25 sq degrees"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/bounds/@minlat",
+      "/osm/bounds/@minlon",
+      "/osm/bounds/@maxlat",
+      "/osm/bounds/@maxlon",
+      "/osm/node/@id",
+      "/osm/node/@lat",
+      "/osm/node/@lon",
+      "/osm/way/@id",
+      "/osm/relation/@id",
+      ".bounds",
+      ".elements[].type",
+      ".elements[].id"
+    ],
+    "notes": "Content-Disposition: attachment; filename=map.osm"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/trackpoints",
+    "auth": "none",
+    "format_variants": [
+      ".gpx"
+    ],
+    "path_params": {},
+    "query_params": {
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "min_lon,min_lat,max_lon,max_lat; required"
+      },
+      "page": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Page number >= 0; default 0"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/gpx/trk/trkseg/trkpt/@lat",
+      "/gpx/trk/trkseg/trkpt/@lon",
+      "/gpx/trk/trkseg/trkpt/time"
+    ],
+    "notes": "Returns GPX format only; Content-Disposition: attachment; filename=tracks.gpx"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/user/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "User ID; from search result or known user"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/user/@id",
+      "/osm/user/@display_name",
+      "/osm/user/@account_created",
+      "/osm/user/description",
+      "/osm/user/contributor-terms/@agreed",
+      "/osm/user/img/@href",
+      "/osm/user/changesets/@count",
+      "/osm/user/traces/@count",
+      "/osm/user/home/@lat",
+      "/osm/user/home/@lon",
+      "/osm/user/home/@zoom",
+      "/osm/user/languages/lang",
+      ".user.id",
+      ".user.display_name",
+      ".user.changesets.count",
+      ".user.traces.count"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/user/details",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/user/@id",
+      "/osm/user/@display_name",
+      "/osm/user/messages/received/@count",
+      "/osm/user/messages/received/@unread",
+      "/osm/user/messages/sent/@count",
+      ".user.id",
+      ".user.display_name",
+      ".user.messages"
+    ],
+    "notes": "Returns full details for the authenticated user"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/user/gpx_files",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/gpx_file/@id",
+      "/osm/gpx_file/@name",
+      "/osm/gpx_file/@lat",
+      "/osm/gpx_file/@lon",
+      "/osm/gpx_file/@visibility",
+      "/osm/gpx_file/@pending"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/users",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {
+      "users": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated list of user IDs; required"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/user/@id",
+      "/osm/user/@display_name",
+      ".users[].id",
+      ".users[].display_name"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/user/preferences",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/preferences/preference/@k",
+      "/osm/preferences/preference/@v",
+      ".preferences"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/user/preferences",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "osm/preferences": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "<osm><preferences><preference k='' v=''/></preferences></osm>"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Replaces entire preferences set; returns empty 200"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/user/preferences/{preference_key}",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "preference_key": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/preferences",
+        "from_field": "/osm/preferences/preference/@k",
+        "notes": "Preference key"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "plain text: preference value string"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/user/preferences/{preference_key}",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "preference_key": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Preference key to set"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "raw_body": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Raw text body = new preference value"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Returns empty 200"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "DELETE /api/0.6/user/preferences/{preference_key}",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "preference_key": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/preferences",
+        "from_field": "/osm/preferences/preference/@k",
+        "notes": "Preference key to delete"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Returns empty 200"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/gpx/create",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "file": {
+        "type": "multipart file",
+        "source": "TASK_SPEC",
+        "notes": "GPX file upload; required"
+      },
+      "description": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Trace description"
+      },
+      "tags": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated tags"
+      },
+      "visibility": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "private|public|trackable|identifiable"
+      },
+      "public": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Deprecated: 0 or 1"
+      }
+    },
+    "response_key_fields": [
+      "plain text: gpx trace id integer"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/gpx/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "POST /api/0.6/gpx/create",
+        "from_field": "plain text response body",
+        "notes": "GPX trace ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/gpx_file/@id",
+      "/osm/gpx_file/@name",
+      "/osm/gpx_file/@lat",
+      "/osm/gpx_file/@lon",
+      "/osm/gpx_file/@visibility",
+      "/osm/gpx_file/@pending",
+      "/osm/gpx_file/description",
+      "/osm/gpx_file/tag"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "PUT /api/0.6/gpx/{id}",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id",
+        "notes": "GPX trace ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "osm/gpx_file": {
+        "type": "XML body",
+        "source": "TASK_SPEC",
+        "notes": "XML with updated name/description/tags/visibility"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Returns 200 OK; owner only"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "DELETE /api/0.6/gpx/{id}",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id",
+        "notes": "GPX trace ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Returns 200 OK; owner only; soft-deletes via TraceDestroyerJob"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/gpx/{id}/details",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id",
+        "notes": "GPX trace ID; alias of GET /gpx/{id}"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/gpx_file/@id",
+      "/osm/gpx_file/@visibility"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/gpx/{id}/data",
+    "auth": "oauth",
+    "format_variants": [
+      ".gpx",
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id",
+        "notes": "GPX trace ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "binary file download"
+    ],
+    "notes": "Returns raw GPX/XML file; Content-Disposition attachment; owner or public traces only"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/notes",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json",
+      ".rss",
+      ".gpx"
+    ],
+    "path_params": {},
+    "query_params": {
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "min_lon,min_lat,max_lon,max_lat; preferred over l/r/b/t"
+      },
+      "l": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Left/min_lon (deprecated; use bbox)"
+      },
+      "r": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Right/max_lon (deprecated; use bbox)"
+      },
+      "b": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Bottom/min_lat (deprecated; use bbox)"
+      },
+      "t": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Top/max_lat (deprecated; use bbox)"
+      },
+      "limit": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Max results 1-10000; default 100"
+      },
+      "closed": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Days since closed to include (-1=all, 0=open only, N=closed within N days); default 7"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/note/@lon",
+      "/osm/note/@lat",
+      "/osm/note/id",
+      "/osm/note/status",
+      "/osm/note/date_created",
+      "/osm/note/comments/comment/text",
+      ".features[].properties.id",
+      ".features[].geometry.coordinates",
+      ".features[].properties.status"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "lat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Latitude; required"
+      },
+      "lon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Longitude; required"
+      },
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Opening comment text; required"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id",
+      "/osm/note/status",
+      ".features[0].properties.id",
+      ".features[0].properties.status"
+    ],
+    "notes": "Anonymous posting allowed if no ACL block; returns note details"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/notes/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json",
+      ".rss",
+      ".gpx"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "POST /api/0.6/notes",
+        "from_field": "/osm/note/id",
+        "notes": "Note ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/note/@lon",
+      "/osm/note/@lat",
+      "/osm/note/id",
+      "/osm/note/status",
+      "/osm/note/comments/comment/text",
+      "/osm/note/comments/comment/user",
+      "/osm/note/comments/comment/uid",
+      ".features[0].properties.id",
+      ".features[0].properties.comments"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "DELETE /api/0.6/notes/{id}",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/notes/{id}",
+        "from_field": "/osm/note/id",
+        "notes": "Note ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Optional hide comment"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/status",
+      ".features[0].properties.status"
+    ],
+    "notes": "Moderator-only; sets status=hidden"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes/{id}/comment",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/notes/{id}",
+        "from_field": "/osm/note/id",
+        "notes": "Note ID; must be open"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comment text; required"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id",
+      "/osm/note/status",
+      ".features[0].properties.id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes/{id}/close",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/notes/{id}",
+        "from_field": "/osm/note/id",
+        "notes": "Note ID; must be open"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Optional closing comment"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id",
+      "/osm/note/status",
+      ".features[0].properties.status"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes/{id}/reopen",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/notes/{id}",
+        "from_field": "/osm/note/id",
+        "notes": "Note ID; must be closed"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Optional reopening comment"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id",
+      "/osm/note/status"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/notes/search",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json",
+      ".rss",
+      ".gpx"
+    ],
+    "path_params": {},
+    "query_params": {
+      "q": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Full-text search query against note comments"
+      },
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Filter by author display name"
+      },
+      "user": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/{id}",
+        "from_field": "/osm/user/@id",
+        "notes": "Filter by author user ID"
+      },
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Bounding box filter"
+      },
+      "from": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "ISO 8601 start date"
+      },
+      "to": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "ISO 8601 end date; default now"
+      },
+      "sort": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "created_at|updated_at; default updated_at"
+      },
+      "order": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "oldest|newest; default newest"
+      },
+      "limit": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Max 1-10000; default 100"
+      },
+      "closed": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Days filter same as /notes"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "/osm/note/id",
+      "/osm/note/status",
+      ".features[].properties.id"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/notes/feed",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {},
+    "query_params": {
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Optional bounding box filter"
+      },
+      "limit": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Max results; default 100"
+      },
+      "closed": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Days filter"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of recent note comments"
+    ],
+    "notes": "Default format is rss"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes/addPOIexec",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "lat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Latitude; required"
+      },
+      "lon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Longitude; required"
+      },
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comment; required"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id"
+    ],
+    "notes": "Legacy alias for POST /api/0.6/notes"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes/closePOIexec",
+    "auth": "oauth",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Note ID; required"
+      },
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Optional comment"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id",
+      "/osm/note/status"
+    ],
+    "notes": "Legacy alias for POST /api/0.6/notes/{id}/close"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /api/0.6/notes/editPOIexec",
+    "auth": "none",
+    "format_variants": [
+      ".xml",
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Note ID; required"
+      },
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comment text; required"
+      }
+    },
+    "response_key_fields": [
+      "/osm/note/id"
+    ],
+    "notes": "Legacy alias for POST /api/0.6/notes/{id}/comment"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/notes/getGPX",
+    "auth": "none",
+    "format_variants": [
+      ".gpx"
+    ],
+    "path_params": {},
+    "query_params": {
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Bounding box"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "GPX waypoints with note data"
+    ],
+    "notes": "Legacy alias for GET /api/0.6/notes with format=gpx"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /api/0.6/notes/getRSSfeed",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed"
+    ],
+    "notes": "Legacy alias for GET /api/0.6/notes/feed"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /search",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "query": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Free text search query; may be parsed as lat/lon, DMS, NSEW coordinates, or forwarded to Nominatim"
+      },
+      "lat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Latitude for reverse geocode (alternative to query)"
+      },
+      "lon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Longitude for reverse geocode (alternative to query)"
+      },
+      "zoom": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Map zoom level hint"
+      },
+      "minlat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box south bound"
+      },
+      "minlon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box west bound"
+      },
+      "maxlat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box north bound"
+      },
+      "maxlon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box east bound"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML page; triggers JS calls to geocoder sub-endpoints"
+    ],
+    "notes": "Returns HTML map page; actual search dispatched client-side to /geocoder/* sub-endpoints"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /geocoder/search_latlon",
+    "auth": "none",
+    "format_variants": [
+      ".html partial"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "lat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Latitude; required"
+      },
+      "lon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Longitude; required"
+      },
+      "zoom": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Zoom level"
+      },
+      "latlon_digits": {
+        "type": "boolean",
+        "source": "DERIVED",
+        "notes": "Set when query was ambiguous lat/lon digits"
+      }
+    },
+    "response_key_fields": [
+      "HTML results partial with .lat, .lon, .zoom, .name per result"
+    ],
+    "notes": "Returns HTML results partial"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /geocoder/search_osm_nominatim",
+    "auth": "none",
+    "format_variants": [
+      ".html partial"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "query": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Search query; required"
+      },
+      "minlon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box west"
+      },
+      "minlat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box south"
+      },
+      "maxlon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box east"
+      },
+      "maxlat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "View box north"
+      },
+      "exclude": {
+        "type": "string",
+        "source": "DERIVED",
+        "notes": "Comma-separated Nominatim place IDs to exclude (from more_params)"
+      }
+    },
+    "response_key_fields": [
+      "HTML results: .lat, .lon, .min_lat, .max_lat, .min_lon, .max_lon, .prefix, .name, .type (N/W/R), .id (osm_id)"
+    ],
+    "notes": "Proxies to Nominatim; response includes .type and .id for OSM object linkage via PREV_CALL"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /geocoder/search_osm_nominatim_reverse",
+    "auth": "none",
+    "format_variants": [
+      ".html partial"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "lat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Latitude; required"
+      },
+      "lon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Longitude; required"
+      },
+      "zoom": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Zoom controls precision"
+      }
+    },
+    "response_key_fields": [
+      "HTML results: .lat, .lon, .zoom, .name, .type (osm_type), .id (osm_id)"
+    ],
+    "notes": "Proxies to Nominatim reverse geocode endpoint"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /directions",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "from": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Origin place name or coordinates"
+      },
+      "to": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Destination place name or coordinates"
+      },
+      "route": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Routing engine identifier"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML map page; routing handled client-side"
+    ],
+    "notes": "Renders map with directions UI; actual routing is client-side"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /export",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "minlon": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      },
+      "minlat": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      },
+      "maxlon": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      },
+      "maxlat": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML export page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /export/finish",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "minlon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "West bound"
+      },
+      "minlat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "South bound"
+      },
+      "maxlon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "East bound"
+      },
+      "maxlat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "North bound"
+      },
+      "format": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "osm|mapnik"
+      },
+      "mapnik_format": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "png|jpeg|svg|pdf (when format=mapnik)"
+      },
+      "mapnik_scale": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Scale denominator (when format=mapnik)"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Redirects to /api/0.6/map for osm format, or to render.openstreetmap.org for mapnik"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /export/embed",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML embed snippet"
+    ],
+    "notes": "Cached; used for generating embeddable map iframes"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "lat": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Map centre latitude (redirects to #map=...)"
+      },
+      "lon": {
+        "type": "float",
+        "source": "TASK_SPEC",
+        "notes": "Map centre longitude"
+      },
+      "zoom": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Map zoom level"
+      },
+      "layers": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Layer codes"
+      },
+      "node": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Redirect to /node/{id}"
+      },
+      "way": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Redirect to /way/{id}"
+      },
+      "relation": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Redirect to /relation/{id}"
+      },
+      "query": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Redirect to /search?query=..."
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML main map page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /edit",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "editor": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "id|potlatch2|remote"
+      },
+      "node": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Focus on node"
+      },
+      "way": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Focus on way"
+      },
+      "note": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Focus on note"
+      },
+      "gpx": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Focus on trace"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML editor page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /go/{code}",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {
+      "code": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Short-link code (base64-like)"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Decodes ShortLink and redirects to map with lat/lon/zoom"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /preview/{type}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "type": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Rich text format type (e.g. markdown)"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "text": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Text to preview"
+      }
+    },
+    "response_key_fields": [
+      "HTML rendered text"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /node/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML browse page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /node/{id}/history",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/node/{id}",
+        "from_field": "/osm/node/@id",
+        "notes": "Node ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML history page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /way/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML browse page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /way/{id}/history",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/way/{id}",
+        "from_field": "/osm/way/@id",
+        "notes": "Way ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML history page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /relation/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML browse page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /relation/{id}/history",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/relation/{id}",
+        "from_field": "/osm/relation/@id",
+        "notes": "Relation ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML history page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /changeset/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/changeset/{id}",
+        "from_field": "/osm/changeset/@id",
+        "notes": "Changeset ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML browse page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /query",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML query page (browse feature query tool)"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /history",
+    "auth": "none",
+    "format_variants": [
+      ".html",
+      ".atom"
+    ],
+    "path_params": {},
+    "query_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Filter by user"
+      },
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Bounding box filter"
+      },
+      "max_id": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Maximum changeset ID for paging"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML or Atom feed of changesets"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /history/feed",
+    "auth": "none",
+    "format_variants": [
+      ".atom"
+    ],
+    "path_params": {},
+    "query_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "bbox": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "Atom feed"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /history/comments/feed",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {},
+    "query_params": {
+      "limit": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Max comments 1-10000; default 100"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of recent changeset comments"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /changeset/{id}/comments/feed",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/changeset/{id}",
+        "from_field": "/osm/changeset/@id",
+        "notes": "Changeset ID; empty string = all"
+      }
+    },
+    "query_params": {
+      "limit": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Max comments"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of changeset comments"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/history",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/{id}",
+        "from_field": "/osm/user/@display_name",
+        "notes": "User display name"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML user changeset history"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /note/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/notes/{id}",
+        "from_field": "/osm/note/id",
+        "notes": "Note ID"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML note page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/notes",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/{id}",
+        "from_field": "/osm/user/@display_name",
+        "notes": "User display name"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of user's notes"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /login",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "referer": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "URL to redirect to after successful login"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML login form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /login",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "username": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Username or email address"
+      },
+      "password": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Password"
+      },
+      "remember_me": {
+        "type": "boolean",
+        "source": "TASK_SPEC",
+        "notes": "Persist session cookie"
+      },
+      "referer": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Post-login redirect URL"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "On success sets session[:user] and redirects; on failure re-renders login form"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /logout",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML confirmation page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /logout",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "referer": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Post-logout redirect"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Destroys UserToken and session; redirects to referer or /"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/new",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "referer": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "auth_provider": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "notes": "Set after OAuth callback"
+      },
+      "auth_uid": {
+        "type": "string",
+        "source": "AUTH_FLOW"
+      },
+      "email": {
+        "type": "string",
+        "source": "AUTH_FLOW"
+      },
+      "nickname": {
+        "type": "string",
+        "source": "AUTH_FLOW"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML signup form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/new",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "user[email]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[email_confirmation]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[display_name]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[pass_crypt]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[pass_crypt_confirmation]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[auth_provider]": {
+        "type": "string",
+        "source": "AUTH_FLOW"
+      },
+      "user[auth_uid]": {
+        "type": "string",
+        "source": "AUTH_FLOW"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Creates session[:new_user], then redirects to /user/terms or third-party auth"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/terms",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML terms of service page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/save",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "read_tou": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "read_ct": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "decline": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "user[consider_pd]": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Creates account or agrees to terms; redirects to welcome or confirmation"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/confirm/resend",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Resends confirmation email; requires matching session token"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/confirm",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML confirmation page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/confirm",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "confirm_string": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Token from confirmation email"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Activates account and logs user in"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/confirm",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "confirm_string": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Confirmation token"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/confirm-email",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "token": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Email change confirmation token"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML confirmation result"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/confirm-email",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "confirm_string": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Email change token"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Confirms new email address; redirects to account edit"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/forgot-password",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML forgot-password form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/forgot-password",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "email": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Registered email address"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Sends reset token email; redirects to login"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/reset-password",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "token": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Password reset token from email"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML password reset form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/reset-password",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "token": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "Reset token"
+      },
+      "user[pass_crypt]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[pass_crypt_confirmation]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Updates password; logs user in on success"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/{id}",
+        "from_field": "/osm/user/@display_name",
+        "notes": "User display name"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML user profile page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /account/edit",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML account settings form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "PUT /account",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "user[display_name]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[new_email]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[pass_crypt]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[pass_crypt_confirmation]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[auth_provider]": {
+        "type": "string",
+        "source": "AUTH_FLOW"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Updates account settings; may redirect to third-party auth"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "DELETE /account",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Soft-deletes account; clears session"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /account/deletion",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML account deletion confirmation page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /dashboard",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML user dashboard"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /preferences",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML preferences page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /preferences/edit",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML preferences edit form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "PUT /preferences",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "user[languages]": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Comma-separated language codes"
+      },
+      "user[preferred_editor]": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "id|potlatch2|remote|default"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Updates language and editor preferences"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /profile/edit",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML profile edit form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "PUT /profile",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "user[description]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user[home_lat]": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      },
+      "user[home_lon]": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      },
+      "user[avatar]": {
+        "type": "multipart file",
+        "source": "TASK_SPEC"
+      },
+      "avatar_action": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "new|delete|gravatar"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Updates description, home location, avatar"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/go_public",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Sets data_public=true; redirects to account edit"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /auth/failure",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {
+      "message": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "notes": "OmniAuth error message key"
+      },
+      "origin": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "notes": "Original URL"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "OmniAuth failure callback; redirects to login with error flash"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /auth/{provider}/callback",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {
+      "provider": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "notes": "OmniAuth provider name: google|facebook|github|openid etc."
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "OmniAuth success callback; processes auth_info and logs in or creates account"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /auth/{provider}/callback",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {
+      "provider": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "notes": "OmniAuth provider name"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "OmniAuth POST callback variant"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /auth/{provider}",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {
+      "provider": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Third-party provider to authenticate with"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Initiates OmniAuth flow; redirects to provider"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /oauth/authorize",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "oauth_token": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /oauth/request_token",
+        "from_field": "oauth_token",
+        "notes": "OAuth 1.0 request token"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML OAuth 1.0 authorization page"
+    ],
+    "notes": "OAuth 1.0a authorization endpoint"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /oauth/authorize",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "oauth_token": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /oauth/request_token",
+        "from_field": "oauth_token"
+      },
+      "allow_read_prefs": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "allow_write_prefs": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "allow_write_diary": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "allow_write_api": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "allow_read_gpx": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "allow_write_gpx": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "allow_write_notes": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Grants or denies OAuth 1.0 permissions; redirects to callback with oauth_token+oauth_verifier"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /oauth/request_token",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "oauth_token",
+      "oauth_token_secret"
+    ],
+    "notes": "OAuth 1.0a: returns request token as URL-encoded form body"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /oauth/request_token",
+    "auth": "none",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "oauth_consumer_key": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "oauth_signature_method": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "oauth_callback": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": [
+      "oauth_token",
+      "oauth_token_secret"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /oauth/access_token",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "oauth_token",
+      "oauth_token_secret"
+    ],
+    "notes": "OAuth 1.0a: exchange authorized request token for access token"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /oauth/access_token",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "oauth_verifier": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "from_endpoint": "POST /oauth/authorize",
+        "notes": "Verifier from authorization callback"
+      }
+    },
+    "response_key_fields": [
+      "oauth_token",
+      "oauth_token_secret"
+    ]
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /oauth/token",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "oauth_token",
+      "oauth_token_secret"
+    ],
+    "notes": "OAuth 1.0a token info endpoint"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "GET /oauth/test_request",
+    "auth": "oauth",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "OAuth 1.0a test endpoint to verify token works"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /oauth/revoke",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "token": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /oauth/access_token",
+        "from_field": "oauth_token"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /oauth/revoke",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "token": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /oauth/access_token",
+        "from_field": "oauth_token"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Invalidates OAuth 1.0 access token; redirects to oauth_clients list"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/oauth_clients",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/details",
+        "from_field": "/osm/user/@display_name"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of OAuth 1.0 client applications"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/oauth_clients",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/details",
+        "from_field": "/osm/user/@display_name"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "client_application[name]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "client_application[url]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "client_application[callback_url]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "client_application[support_url]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/oauth_clients/{id}",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/user/details",
+        "from_field": "/osm/user/@display_name"
+      },
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /user/{display_name}/oauth_clients",
+        "from_field": ".id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML OAuth 1.0 app detail page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /oauth2/authorize",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "client_id": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "OAuth 2.0 application client_id"
+      },
+      "redirect_uri": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "response_type": {
+        "type": "string",
+        "source": "STATIC",
+        "notes": "code"
+      },
+      "scope": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Space-separated scopes e.g. read_prefs write_api"
+      },
+      "state": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "code_challenge": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "PKCE code challenge"
+      },
+      "code_challenge_method": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "S256|plain"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML OAuth 2.0 authorization consent page"
+    ],
+    "notes": "Doorkeeper OAuth 2.0 authorization endpoint"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /oauth2/authorize",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "client_id": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "redirect_uri": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "response_type": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "scope": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "state": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "User grants/denies; redirects to redirect_uri?code=...&state=..."
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /oauth2/token",
+    "auth": "none",
+    "format_variants": [
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "grant_type": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "authorization_code|refresh_token|client_credentials"
+      },
+      "code": {
+        "type": "string",
+        "source": "AUTH_FLOW",
+        "from_endpoint": "POST /oauth2/authorize",
+        "from_field": "redirect_uri code param"
+      },
+      "redirect_uri": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "client_id": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "client_secret": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "code_verifier": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "PKCE verifier"
+      }
+    },
+    "response_key_fields": [
+      ".access_token",
+      ".token_type",
+      ".expires_in",
+      ".refresh_token",
+      ".scope"
+    ],
+    "notes": "Doorkeeper OAuth 2.0 token endpoint"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /oauth2/revoke",
+    "auth": "none",
+    "format_variants": [
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "token": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "POST /oauth2/token",
+        "from_field": ".access_token"
+      },
+      "client_id": {
+        "type": "string",
+        "source": "STATIC"
+      },
+      "client_secret": {
+        "type": "string",
+        "source": "STATIC"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Doorkeeper token revocation; returns 200 OK"
+  },
+  {
+    "api_type": "rest",
+    "endpoint": "POST /oauth2/introspect",
+    "auth": "none",
+    "format_variants": [
+      ".json"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "token": {
+        "type": "string",
+        "source": "PREV_CALL",
+        "from_endpoint": "POST /oauth2/token",
+        "from_field": ".access_token"
+      }
+    },
+    "response_key_fields": [
+      ".active",
+      ".scope",
+      ".client_id",
+      ".username",
+      ".exp"
+    ],
+    "notes": "Doorkeeper token introspection (RFC 7662)"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /oauth2/applications",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of user's OAuth 2.0 applications"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /oauth2/applications",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "oauth2_application[name]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "oauth2_application[redirect_uri]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "oauth2_application[confidential]": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      },
+      "oauth2_application[scopes][]": {
+        "type": "string[]",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /oauth2/applications/{id}",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /oauth2/applications",
+        "from_field": ".id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML OAuth 2.0 app detail"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /oauth2/authorized_applications",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of apps authorized by this user"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "DELETE /oauth2/authorized_applications/{id}",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /oauth2/authorized_applications",
+        "from_field": ".id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Revokes all tokens for this application"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /traces",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "tag": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "page": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of public GPX traces"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /traces/new",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML trace upload form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /traces",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "trace[gpx_file]": {
+        "type": "multipart file",
+        "source": "TASK_SPEC",
+        "notes": "GPX file to upload"
+      },
+      "trace[description]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "trace[tagstring]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "trace[visibility]": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "private|public|trackable|identifiable"
+      }
+    },
+    "response_key_fields": [],
+    "notes": "Creates trace; dispatches TraceImporterJob"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/traces/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML trace detail page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /traces/{id}/edit",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML trace edit form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "PUT /traces/{id}",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "trace[description]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "trace[tagstring]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "trace[visibility]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "DELETE /traces/{id}",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /trace/{id}/data",
+    "auth": "none",
+    "format_variants": [
+      ".gpx",
+      ".xml"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "binary GPX download"
+    ],
+    "notes": "Public or owner-only file download"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/traces/{id}/picture",
+    "auth": "none",
+    "format_variants": [
+      ".gif"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "GIF image or redirect to blob storage"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/traces/{id}/icon",
+    "auth": "none",
+    "format_variants": [
+      ".gif"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "PREV_CALL",
+        "from_endpoint": "GET /api/0.6/gpx/{id}",
+        "from_field": "/osm/gpx_file/@id"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "GIF icon or redirect to blob storage"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /traces/rss",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of public traces"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/traces/rss",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of user's public traces"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /diary",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "language": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "page": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of diary entries"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /diary/new",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML new diary entry form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /diary",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "diary_entry[title]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "diary_entry[body]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "diary_entry[language_code]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "diary_entry[latitude]": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      },
+      "diary_entry[longitude]": {
+        "type": "float",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/diary",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML user diary entries"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/diary/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML diary entry detail"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/diary/{id}/newcomment",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "diary_comment[body]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/diary/{id}/subscribe",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/diary/{id}/unsubscribe",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/diary/rss",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of user diary entries"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /diary/rss",
+    "auth": "none",
+    "format_variants": [
+      ".rss"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "RSS feed of all diary entries"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /messages/inbox",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML inbox"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /messages/outbox",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML outbox"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /message/new/{display_name}",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML compose message form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /messages",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "message[title]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "message[body]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /messages/{id}",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML message detail; marks as read"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "DELETE /messages/{id}",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /messages/{message_id}/mark",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "message_id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "mark": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "read|unread"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /messages/{message_id}/reply",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "message_id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML reply form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /messages/{message_id}/reply",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "message_id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "message[title]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "message[body]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user/{display_name}/make_friend",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML confirmation page"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/make_friend",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Creates Friendship; sends notification email"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/remove_friend",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user_blocks",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of all user blocks"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /blocks/new/{display_name}",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML new block form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user_blocks",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user_block_period": {
+        "type": "integer",
+        "source": "TASK_SPEC",
+        "notes": "Hours to block"
+      },
+      "user_block[reason]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "user_block[needs_view]": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /user_blocks/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML block detail"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /blocks/{id}/revoke",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML revoke confirmation"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /blocks/{id}/revoke",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "confirm": {
+        "type": "boolean",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/role/{role}/grant",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "role": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "administrator|moderator"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Administrator-only"
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /user/{display_name}/role/{role}/revoke",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "display_name": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "role": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /issues",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "search_by_user": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "status": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "open|ignored|resolved"
+      },
+      "issue_type": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Note|DiaryEntry|DiaryComment|User"
+      },
+      "last_updated_by": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML issues list; moderator/admin only"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /issues/{id}",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML issue detail"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /issues/{id}/resolve",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /issues/{id}/ignore",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /issues/{id}/reopen",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /issues/{issue_id}/comments",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "issue_id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "issue_comment[body]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /reports/new",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {
+      "reportable_id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      },
+      "reportable_type": {
+        "type": "string",
+        "source": "TASK_SPEC",
+        "notes": "Note|DiaryEntry|DiaryComment|User"
+      }
+    },
+    "body_params": {},
+    "response_key_fields": [
+      "HTML report form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /reports",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "report[details]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "report[category]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "report[issue][reportable_id]": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      },
+      "report[issue][reportable_type]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /redactions",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML list of redactions"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /redactions/new",
+    "auth": "session_cookie",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML new redaction form"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "POST /redactions",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {},
+    "query_params": {},
+    "body_params": {
+      "redaction[title]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "redaction[description]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "GET /redactions/{id}",
+    "auth": "none",
+    "format_variants": [
+      ".html"
+    ],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [
+      "HTML redaction detail"
+    ]
+  },
+  {
+    "api_type": "form",
+    "endpoint": "PUT /redactions/{id}",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {
+      "redaction[title]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      },
+      "redaction[description]": {
+        "type": "string",
+        "source": "TASK_SPEC"
+      }
+    },
+    "response_key_fields": []
+  },
+  {
+    "api_type": "form",
+    "endpoint": "DELETE /redactions/{id}",
+    "auth": "session_cookie",
+    "format_variants": [],
+    "path_params": {
+      "id": {
+        "type": "integer",
+        "source": "TASK_SPEC"
+      }
+    },
+    "query_params": {},
+    "body_params": {},
+    "response_key_fields": [],
+    "notes": "Only allowed if no elements are associated with this redaction"
+  }
+]

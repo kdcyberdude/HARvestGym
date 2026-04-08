@@ -1,0 +1,1090 @@
+{
+  "_meta": {
+    "description": "Static parameter pools for the 7 HARvestGym task templates.",
+    "generated_at": "2026-04-08",
+    "source": {
+      "categories": "GET /rest/V1/categories/list (live EC2, port 7780)",
+      "products": "GET /rest/V1/products type_id=simple + configurable (live EC2, port 7780)",
+      "forums": "HTML scrape of /forums page (live EC2, port 9999) + HTTP 200 verification per slug",
+      "wikipedia": "Well-known Wikipedia titles \u2014 verified by grader at runtime via HEAD /wikipedia_en.../A/{slug}",
+      "admin_skus": "Generated (HAR-TEST-NNN namespace, no collision with existing catalog)",
+      "post_titles": "Generated \u2014 grader checks post was created, not the exact title wording"
+    },
+    "grader_matching_notes": {
+      "template_1": "category_id stored for grader; category_name is what appears in task string",
+      "template_2": "expected_slug stored for grader (verifies HTTP 200); display title is in task string",
+      "template_3": "sku stored for grader (verifies cart item); product name is in task string",
+      "template_4": "forum_name must exist and return posts; no exact value matching needed",
+      "template_5": "title is free-form generated; grader only checks post was created in that forum",
+      "template_6": "sku stored for grader (verifies order was placed); product name is in task string",
+      "template_7": "sku+price are exact \u2014 grader calls GET /rest/V1/products/{sku} to verify creation"
+    }
+  },
+  "template_1": {
+    "description": "List products in category {category_name}",
+    "tier": "Easy",
+    "app": "shopping",
+    "slots": [
+      "category_name"
+    ],
+    "pool": {
+      "category_name": [
+        {
+          "name": "Gear",
+          "category_id": 3
+        },
+        {
+          "name": "Bags",
+          "category_id": 4
+        },
+        {
+          "name": "Fitness Equipment",
+          "category_id": 5
+        },
+        {
+          "name": "Watches",
+          "category_id": 6
+        },
+        {
+          "name": "New Luma Yoga Collection",
+          "category_id": 8
+        },
+        {
+          "name": "Training",
+          "category_id": 9
+        },
+        {
+          "name": "Video Download",
+          "category_id": 10
+        },
+        {
+          "name": "Men",
+          "category_id": 11
+        },
+        {
+          "name": "Tops",
+          "category_id": 12
+        },
+        {
+          "name": "Bottoms",
+          "category_id": 13
+        },
+        {
+          "name": "Jackets",
+          "category_id": 14
+        },
+        {
+          "name": "Hoodies & Sweatshirts",
+          "category_id": 15
+        },
+        {
+          "name": "Tees",
+          "category_id": 16
+        },
+        {
+          "name": "Tanks",
+          "category_id": 17
+        },
+        {
+          "name": "Pants",
+          "category_id": 18
+        },
+        {
+          "name": "Shorts",
+          "category_id": 19
+        },
+        {
+          "name": "Women",
+          "category_id": 20
+        },
+        {
+          "name": "Tops",
+          "category_id": 21
+        },
+        {
+          "name": "Bottoms",
+          "category_id": 22
+        },
+        {
+          "name": "Jackets",
+          "category_id": 23
+        },
+        {
+          "name": "Hoodies & Sweatshirts",
+          "category_id": 24
+        },
+        {
+          "name": "Tees",
+          "category_id": 25
+        },
+        {
+          "name": "Bras & Tanks",
+          "category_id": 26
+        },
+        {
+          "name": "Pants",
+          "category_id": 27
+        },
+        {
+          "name": "Shorts",
+          "category_id": 28
+        },
+        {
+          "name": "Women Sale",
+          "category_id": 30
+        },
+        {
+          "name": "Men Sale",
+          "category_id": 31
+        },
+        {
+          "name": "Pants",
+          "category_id": 32
+        },
+        {
+          "name": "Tees",
+          "category_id": 33
+        },
+        {
+          "name": "Erin Recommends",
+          "category_id": 34
+        },
+        {
+          "name": "Performance Fabrics",
+          "category_id": 35
+        },
+        {
+          "name": "Eco Friendly",
+          "category_id": 36
+        },
+        {
+          "name": "Sale",
+          "category_id": 37
+        },
+        {
+          "name": "What's New",
+          "category_id": 38
+        },
+        {
+          "name": "Performance Sportswear New",
+          "category_id": 39
+        },
+        {
+          "name": "Eco Collection New",
+          "category_id": 40
+        }
+      ]
+    }
+  },
+  "template_2": {
+    "description": "Retrieve article summary for {title}",
+    "tier": "Easy",
+    "app": "wikipedia",
+    "slots": [
+      "title"
+    ],
+    "pool": {
+      "title": [
+        {
+          "display": "Python (programming language)",
+          "search_query": "Python programming language",
+          "expected_slug": "Python_(programming_language)"
+        },
+        {
+          "display": "Albert Einstein",
+          "search_query": "Albert Einstein",
+          "expected_slug": "Albert_Einstein"
+        },
+        {
+          "display": "World War II",
+          "search_query": "World War II",
+          "expected_slug": "World_War_II"
+        },
+        {
+          "display": "Photosynthesis",
+          "search_query": "Photosynthesis",
+          "expected_slug": "Photosynthesis"
+        },
+        {
+          "display": "Marie Curie",
+          "search_query": "Marie Curie",
+          "expected_slug": "Marie_Curie"
+        },
+        {
+          "display": "Moon",
+          "search_query": "Moon",
+          "expected_slug": "Moon"
+        },
+        {
+          "display": "JavaScript",
+          "search_query": "JavaScript",
+          "expected_slug": "JavaScript"
+        },
+        {
+          "display": "Eiffel Tower",
+          "search_query": "Eiffel Tower",
+          "expected_slug": "Eiffel_Tower"
+        },
+        {
+          "display": "Black hole",
+          "search_query": "Black hole",
+          "expected_slug": "Black_hole"
+        },
+        {
+          "display": "Charles Darwin",
+          "search_query": "Charles Darwin",
+          "expected_slug": "Charles_Darwin"
+        },
+        {
+          "display": "Artificial intelligence",
+          "search_query": "Artificial intelligence",
+          "expected_slug": "Artificial_intelligence"
+        },
+        {
+          "display": "DNA",
+          "search_query": "DNA",
+          "expected_slug": "DNA"
+        },
+        {
+          "display": "Mount Everest",
+          "search_query": "Mount Everest",
+          "expected_slug": "Mount_Everest"
+        },
+        {
+          "display": "Isaac Newton",
+          "search_query": "Isaac Newton",
+          "expected_slug": "Isaac_Newton"
+        },
+        {
+          "display": "Solar System",
+          "search_query": "Solar System",
+          "expected_slug": "Solar_System"
+        },
+        {
+          "display": "Great Wall of China",
+          "search_query": "Great Wall of China",
+          "expected_slug": "Great_Wall_of_China"
+        },
+        {
+          "display": "William Shakespeare",
+          "search_query": "William Shakespeare",
+          "expected_slug": "William_Shakespeare"
+        },
+        {
+          "display": "Amazon River",
+          "search_query": "Amazon River",
+          "expected_slug": "Amazon_River"
+        },
+        {
+          "display": "Quantum mechanics",
+          "search_query": "Quantum mechanics",
+          "expected_slug": "Quantum_mechanics"
+        },
+        {
+          "display": "Napoleon",
+          "search_query": "Napoleon",
+          "expected_slug": "Napoleon"
+        }
+      ]
+    }
+  },
+  "template_3": {
+    "description": "Add {product_name} to a guest cart",
+    "tier": "Medium",
+    "app": "shopping",
+    "slots": [
+      "product_name"
+    ],
+    "pool": {
+      "product_name": [
+        {
+          "name": "Joust Duffle Bag",
+          "sku": "24-MB01"
+        },
+        {
+          "name": "Strive Shoulder Pack",
+          "sku": "24-MB04"
+        },
+        {
+          "name": "Crown Summit Backpack",
+          "sku": "24-MB03"
+        },
+        {
+          "name": "Wayfarer Messenger Bag",
+          "sku": "24-MB05"
+        },
+        {
+          "name": "Rival Field Messenger",
+          "sku": "24-MB06"
+        },
+        {
+          "name": "Fusion Backpack",
+          "sku": "24-MB02"
+        },
+        {
+          "name": "Impulse Duffle",
+          "sku": "24-UB02"
+        },
+        {
+          "name": "Voyage Yoga Bag",
+          "sku": "24-WB01"
+        },
+        {
+          "name": "Compete Track Tote",
+          "sku": "24-WB02"
+        },
+        {
+          "name": "Savvy Shoulder Tote",
+          "sku": "24-WB05"
+        },
+        {
+          "name": "Endeavor Daytrip Backpack",
+          "sku": "24-WB06"
+        },
+        {
+          "name": "Driven Backpack",
+          "sku": "24-WB03"
+        },
+        {
+          "name": "Overnight Duffle",
+          "sku": "24-WB07"
+        },
+        {
+          "name": "Push It Messenger Bag",
+          "sku": "24-WB04"
+        },
+        {
+          "name": "Affirm Water Bottle",
+          "sku": "24-UG06"
+        },
+        {
+          "name": "Dual Handle Cardio Ball",
+          "sku": "24-UG07"
+        },
+        {
+          "name": "Zing Jump Rope",
+          "sku": "24-UG04"
+        },
+        {
+          "name": "Pursuit Lumaflex&trade; Tone Band",
+          "sku": "24-UG02"
+        },
+        {
+          "name": "Go-Get'r Pushup Grips",
+          "sku": "24-UG05"
+        },
+        {
+          "name": "Quest Lumaflex&trade; Band",
+          "sku": "24-UG01"
+        },
+        {
+          "name": "Sprite Foam Yoga Brick",
+          "sku": "24-WG084"
+        },
+        {
+          "name": "Sprite Foam Roller",
+          "sku": "24-WG088"
+        },
+        {
+          "name": "Harmony Lumaflex&trade; Strength Band Kit",
+          "sku": "24-UG03"
+        },
+        {
+          "name": "Sprite Stasis Ball 55 cm",
+          "sku": "24-WG081-gray"
+        },
+        {
+          "name": "Sprite Stasis Ball 65 cm",
+          "sku": "24-WG082-gray"
+        },
+        {
+          "name": "Sprite Stasis Ball 75 cm",
+          "sku": "24-WG083-gray"
+        },
+        {
+          "name": "Sprite Yoga Strap 6 foot",
+          "sku": "24-WG085"
+        },
+        {
+          "name": "Sprite Yoga Strap 8 foot",
+          "sku": "24-WG086"
+        },
+        {
+          "name": "Sprite Yoga Strap 10 foot",
+          "sku": "24-WG087"
+        },
+        {
+          "name": "Aim Analog Watch",
+          "sku": "24-MG04"
+        },
+        {
+          "name": "Endurance Watch",
+          "sku": "24-MG01"
+        },
+        {
+          "name": "Summit Watch",
+          "sku": "24-MG03"
+        },
+        {
+          "name": "Cruise Dual Analog Watch",
+          "sku": "24-MG05"
+        },
+        {
+          "name": "Dash Digital Watch",
+          "sku": "24-MG02"
+        },
+        {
+          "name": "Luma Analog Watch",
+          "sku": "24-WG09"
+        },
+        {
+          "name": "Bolo Sport Watch",
+          "sku": "24-WG01"
+        },
+        {
+          "name": "Clamber Watch",
+          "sku": "24-WG03"
+        },
+        {
+          "name": "Didi Sport Watch",
+          "sku": "24-WG02"
+        },
+        {
+          "name": "Stellar Solar Jacket",
+          "sku": "WJ01"
+        },
+        {
+          "name": "Josie Yoga Jacket",
+          "sku": "WJ02"
+        },
+        {
+          "name": "Augusta Pullover Jacket",
+          "sku": "WJ03"
+        },
+        {
+          "name": "Ingrid Running Jacket",
+          "sku": "WJ04"
+        },
+        {
+          "name": "Riona Full Zip Jacket",
+          "sku": "WJ05"
+        },
+        {
+          "name": "Juno Jacket",
+          "sku": "WJ06"
+        },
+        {
+          "name": "Inez Full Zip Jacket",
+          "sku": "WJ07"
+        },
+        {
+          "name": "Adrienne Trek Jacket",
+          "sku": "WJ08"
+        },
+        {
+          "name": "Jade Yoga Jacket",
+          "sku": "WJ09"
+        },
+        {
+          "name": "Nadia Elements Shell",
+          "sku": "WJ10"
+        },
+        {
+          "name": "Neve Studio Dance Jacket",
+          "sku": "WJ11"
+        },
+        {
+          "name": "Olivia 1/4 Zip Light Jacket",
+          "sku": "WJ12"
+        },
+        {
+          "name": "Chaz Kangeroo Hoodie",
+          "sku": "MH01"
+        },
+        {
+          "name": "Teton Pullover Hoodie",
+          "sku": "MH02"
+        },
+        {
+          "name": "Bruno Compete Hoodie",
+          "sku": "MH03"
+        },
+        {
+          "name": "Frankie  Sweatshirt",
+          "sku": "MH04"
+        },
+        {
+          "name": "Hollister Backyard Sweatshirt",
+          "sku": "MH05"
+        },
+        {
+          "name": "Stark Fundamental Hoodie",
+          "sku": "MH06"
+        },
+        {
+          "name": "Hero Hoodie",
+          "sku": "MH07"
+        },
+        {
+          "name": "Oslo Trek Hoodie",
+          "sku": "MH08"
+        }
+      ]
+    }
+  },
+  "template_4": {
+    "description": "Retrieve all posts in {forum_category} (authed)",
+    "tier": "Medium",
+    "app": "forum",
+    "slots": [
+      "forum_category"
+    ],
+    "pool": {
+      "forum_category": [
+        {
+          "forum_name": "AskReddit"
+        },
+        {
+          "forum_name": "relationship_advice"
+        },
+        {
+          "forum_name": "worldnews"
+        },
+        {
+          "forum_name": "news"
+        },
+        {
+          "forum_name": "movies"
+        },
+        {
+          "forum_name": "memes"
+        },
+        {
+          "forum_name": "wallstreetbets"
+        },
+        {
+          "forum_name": "gaming"
+        },
+        {
+          "forum_name": "technology"
+        },
+        {
+          "forum_name": "pics"
+        },
+        {
+          "forum_name": "funny"
+        },
+        {
+          "forum_name": "television"
+        },
+        {
+          "forum_name": "mildlyinteresting"
+        },
+        {
+          "forum_name": "Showerthoughts"
+        },
+        {
+          "forum_name": "todayilearned"
+        },
+        {
+          "forum_name": "personalfinance"
+        },
+        {
+          "forum_name": "LifeProTips"
+        },
+        {
+          "forum_name": "Futurology"
+        },
+        {
+          "forum_name": "Music"
+        },
+        {
+          "forum_name": "explainlikeimfive"
+        },
+        {
+          "forum_name": "books"
+        },
+        {
+          "forum_name": "science"
+        },
+        {
+          "forum_name": "Jokes"
+        },
+        {
+          "forum_name": "tifu"
+        },
+        {
+          "forum_name": "space"
+        }
+      ]
+    }
+  },
+  "template_5": {
+    "description": "Create a post titled {title} in {category}",
+    "tier": "Hard",
+    "app": "forum",
+    "slots": [
+      "title",
+      "category"
+    ],
+    "pool": {
+      "title": [
+        "Thoughts on the latest developments in AI safety",
+        "Best practices for remote work in 2026",
+        "How do you stay motivated when learning a new skill?",
+        "What are your favourite open-source projects right now?",
+        "Underrated books that changed how you think",
+        "Tips for beginner photographers \u2014 what I wish I knew",
+        "The most interesting science paper I read this week",
+        "Ask me anything about Python performance tuning",
+        "Weekly discussion: what are you building this month?",
+        "Hidden gems in streaming music you should know about",
+        "Travel destinations that are worth the hype",
+        "How to cook a perfect risotto \u2014 my method after 10 attempts",
+        "What sport have you picked up recently and why?",
+        "Recommend a documentary that genuinely surprised you",
+        "Discussion: is functional programming overrated?",
+        "Things that made you better at managing personal finance",
+        "The weirdest film you watched and actually enjoyed",
+        "My experience switching from VS Code to a different editor",
+        "Why I started journaling and what changed",
+        "Gaming setup upgrades that actually made a difference"
+      ],
+      "category": [
+        {
+          "forum_name": "AskReddit"
+        },
+        {
+          "forum_name": "relationship_advice"
+        },
+        {
+          "forum_name": "worldnews"
+        },
+        {
+          "forum_name": "news"
+        },
+        {
+          "forum_name": "movies"
+        },
+        {
+          "forum_name": "memes"
+        },
+        {
+          "forum_name": "wallstreetbets"
+        },
+        {
+          "forum_name": "gaming"
+        },
+        {
+          "forum_name": "technology"
+        },
+        {
+          "forum_name": "pics"
+        },
+        {
+          "forum_name": "funny"
+        },
+        {
+          "forum_name": "television"
+        },
+        {
+          "forum_name": "mildlyinteresting"
+        },
+        {
+          "forum_name": "Showerthoughts"
+        },
+        {
+          "forum_name": "todayilearned"
+        },
+        {
+          "forum_name": "personalfinance"
+        },
+        {
+          "forum_name": "LifeProTips"
+        },
+        {
+          "forum_name": "Futurology"
+        },
+        {
+          "forum_name": "Music"
+        },
+        {
+          "forum_name": "explainlikeimfive"
+        },
+        {
+          "forum_name": "books"
+        },
+        {
+          "forum_name": "science"
+        },
+        {
+          "forum_name": "Jokes"
+        },
+        {
+          "forum_name": "tifu"
+        },
+        {
+          "forum_name": "space"
+        }
+      ]
+    }
+  },
+  "template_6": {
+    "description": "Guest checkout for {product_name}",
+    "tier": "Hard",
+    "app": "shopping",
+    "slots": [
+      "product_name"
+    ],
+    "pool": {
+      "product_name": [
+        {
+          "name": "Joust Duffle Bag",
+          "sku": "24-MB01"
+        },
+        {
+          "name": "Strive Shoulder Pack",
+          "sku": "24-MB04"
+        },
+        {
+          "name": "Crown Summit Backpack",
+          "sku": "24-MB03"
+        },
+        {
+          "name": "Wayfarer Messenger Bag",
+          "sku": "24-MB05"
+        },
+        {
+          "name": "Rival Field Messenger",
+          "sku": "24-MB06"
+        },
+        {
+          "name": "Fusion Backpack",
+          "sku": "24-MB02"
+        },
+        {
+          "name": "Impulse Duffle",
+          "sku": "24-UB02"
+        },
+        {
+          "name": "Voyage Yoga Bag",
+          "sku": "24-WB01"
+        },
+        {
+          "name": "Compete Track Tote",
+          "sku": "24-WB02"
+        },
+        {
+          "name": "Savvy Shoulder Tote",
+          "sku": "24-WB05"
+        },
+        {
+          "name": "Endeavor Daytrip Backpack",
+          "sku": "24-WB06"
+        },
+        {
+          "name": "Driven Backpack",
+          "sku": "24-WB03"
+        },
+        {
+          "name": "Overnight Duffle",
+          "sku": "24-WB07"
+        },
+        {
+          "name": "Push It Messenger Bag",
+          "sku": "24-WB04"
+        },
+        {
+          "name": "Affirm Water Bottle",
+          "sku": "24-UG06"
+        },
+        {
+          "name": "Dual Handle Cardio Ball",
+          "sku": "24-UG07"
+        },
+        {
+          "name": "Zing Jump Rope",
+          "sku": "24-UG04"
+        },
+        {
+          "name": "Pursuit Lumaflex&trade; Tone Band",
+          "sku": "24-UG02"
+        },
+        {
+          "name": "Go-Get'r Pushup Grips",
+          "sku": "24-UG05"
+        },
+        {
+          "name": "Quest Lumaflex&trade; Band",
+          "sku": "24-UG01"
+        },
+        {
+          "name": "Sprite Foam Yoga Brick",
+          "sku": "24-WG084"
+        },
+        {
+          "name": "Sprite Foam Roller",
+          "sku": "24-WG088"
+        },
+        {
+          "name": "Harmony Lumaflex&trade; Strength Band Kit",
+          "sku": "24-UG03"
+        },
+        {
+          "name": "Sprite Stasis Ball 55 cm",
+          "sku": "24-WG081-gray"
+        },
+        {
+          "name": "Sprite Stasis Ball 65 cm",
+          "sku": "24-WG082-gray"
+        },
+        {
+          "name": "Sprite Stasis Ball 75 cm",
+          "sku": "24-WG083-gray"
+        },
+        {
+          "name": "Sprite Yoga Strap 6 foot",
+          "sku": "24-WG085"
+        },
+        {
+          "name": "Sprite Yoga Strap 8 foot",
+          "sku": "24-WG086"
+        },
+        {
+          "name": "Sprite Yoga Strap 10 foot",
+          "sku": "24-WG087"
+        },
+        {
+          "name": "Aim Analog Watch",
+          "sku": "24-MG04"
+        },
+        {
+          "name": "Endurance Watch",
+          "sku": "24-MG01"
+        },
+        {
+          "name": "Summit Watch",
+          "sku": "24-MG03"
+        },
+        {
+          "name": "Cruise Dual Analog Watch",
+          "sku": "24-MG05"
+        },
+        {
+          "name": "Dash Digital Watch",
+          "sku": "24-MG02"
+        },
+        {
+          "name": "Luma Analog Watch",
+          "sku": "24-WG09"
+        },
+        {
+          "name": "Bolo Sport Watch",
+          "sku": "24-WG01"
+        },
+        {
+          "name": "Clamber Watch",
+          "sku": "24-WG03"
+        },
+        {
+          "name": "Didi Sport Watch",
+          "sku": "24-WG02"
+        },
+        {
+          "name": "Stellar Solar Jacket",
+          "sku": "WJ01"
+        },
+        {
+          "name": "Josie Yoga Jacket",
+          "sku": "WJ02"
+        },
+        {
+          "name": "Augusta Pullover Jacket",
+          "sku": "WJ03"
+        },
+        {
+          "name": "Ingrid Running Jacket",
+          "sku": "WJ04"
+        },
+        {
+          "name": "Riona Full Zip Jacket",
+          "sku": "WJ05"
+        },
+        {
+          "name": "Juno Jacket",
+          "sku": "WJ06"
+        },
+        {
+          "name": "Inez Full Zip Jacket",
+          "sku": "WJ07"
+        },
+        {
+          "name": "Adrienne Trek Jacket",
+          "sku": "WJ08"
+        },
+        {
+          "name": "Jade Yoga Jacket",
+          "sku": "WJ09"
+        },
+        {
+          "name": "Nadia Elements Shell",
+          "sku": "WJ10"
+        },
+        {
+          "name": "Neve Studio Dance Jacket",
+          "sku": "WJ11"
+        },
+        {
+          "name": "Olivia 1/4 Zip Light Jacket",
+          "sku": "WJ12"
+        },
+        {
+          "name": "Chaz Kangeroo Hoodie",
+          "sku": "MH01"
+        },
+        {
+          "name": "Teton Pullover Hoodie",
+          "sku": "MH02"
+        },
+        {
+          "name": "Bruno Compete Hoodie",
+          "sku": "MH03"
+        },
+        {
+          "name": "Frankie  Sweatshirt",
+          "sku": "MH04"
+        },
+        {
+          "name": "Hollister Backyard Sweatshirt",
+          "sku": "MH05"
+        },
+        {
+          "name": "Stark Fundamental Hoodie",
+          "sku": "MH06"
+        },
+        {
+          "name": "Hero Hoodie",
+          "sku": "MH07"
+        },
+        {
+          "name": "Oslo Trek Hoodie",
+          "sku": "MH08"
+        }
+      ]
+    }
+  },
+  "template_7": {
+    "description": "Create a new product with SKU {sku}, price {price}",
+    "tier": "Hard",
+    "app": "shopping_admin",
+    "slots": [
+      "sku",
+      "price",
+      "product_name"
+    ],
+    "pool": {
+      "product_spec": [
+        {
+          "sku": "HAR-TEST-001",
+          "price": 19.99,
+          "product_name": "HAR Training Widget Alpha"
+        },
+        {
+          "sku": "HAR-TEST-002",
+          "price": 34.5,
+          "product_name": "HAR Training Widget Beta"
+        },
+        {
+          "sku": "HAR-TEST-003",
+          "price": 9.99,
+          "product_name": "HAR Economy Pack"
+        },
+        {
+          "sku": "HAR-TEST-004",
+          "price": 49.0,
+          "product_name": "HAR Premium Kit"
+        },
+        {
+          "sku": "HAR-TEST-005",
+          "price": 7.75,
+          "product_name": "HAR Starter Bundle"
+        },
+        {
+          "sku": "HAR-TEST-006",
+          "price": 129.0,
+          "product_name": "HAR Deluxe Set"
+        },
+        {
+          "sku": "HAR-TEST-007",
+          "price": 22.0,
+          "product_name": "HAR Standard Unit"
+        },
+        {
+          "sku": "HAR-TEST-008",
+          "price": 14.95,
+          "product_name": "HAR Basic Module"
+        },
+        {
+          "sku": "HAR-TEST-009",
+          "price": 59.99,
+          "product_name": "HAR Advanced Pack"
+        },
+        {
+          "sku": "HAR-TEST-010",
+          "price": 3.5,
+          "product_name": "HAR Mini Component"
+        },
+        {
+          "sku": "HAR-TEST-011",
+          "price": 89.0,
+          "product_name": "HAR Pro Edition"
+        },
+        {
+          "sku": "HAR-TEST-012",
+          "price": 11.25,
+          "product_name": "HAR Lite Version"
+        },
+        {
+          "sku": "HAR-TEST-013",
+          "price": 199.99,
+          "product_name": "HAR Enterprise Module"
+        },
+        {
+          "sku": "HAR-TEST-014",
+          "price": 6.0,
+          "product_name": "HAR Sample Item"
+        },
+        {
+          "sku": "HAR-TEST-015",
+          "price": 45.0,
+          "product_name": "HAR Mid-Range Pack"
+        },
+        {
+          "sku": "HAR-TEST-016",
+          "price": 25.0,
+          "product_name": "HAR Core Component"
+        },
+        {
+          "sku": "HAR-TEST-017",
+          "price": 75.0,
+          "product_name": "HAR Extended Kit"
+        },
+        {
+          "sku": "HAR-TEST-018",
+          "price": 18.5,
+          "product_name": "HAR Value Bundle"
+        },
+        {
+          "sku": "HAR-TEST-019",
+          "price": 99.0,
+          "product_name": "HAR Complete Suite"
+        },
+        {
+          "sku": "HAR-TEST-020",
+          "price": 2.99,
+          "product_name": "HAR Micro Unit"
+        }
+      ]
+    }
+  }
+}

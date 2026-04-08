@@ -1,0 +1,2 @@
+hars/shopping.har filter=lfs diff=lfs merge=lfs -text
+hars/shopping_admin.har filter=lfs diff=lfs merge=lfs -text

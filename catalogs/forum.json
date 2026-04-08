@@ -1,0 +1,1517 @@
+{
+  "_meta": {
+    "generated": "2026-04-08",
+    "websockets": "none — no Mercure, Pusher, or WebSocket integration found in codebase"
+  },
+  "endpoints": [
+    {
+      "api_type": "form",
+      "route_name": "login_check",
+      "endpoint": "POST /login_check",
+      "auth": "none",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "_username": { "type": "string", "source": "TASK_SPEC", "notes": "Login username" },
+        "_password": { "type": "string", "source": "TASK_SPEC", "notes": "Login password" },
+        "_remember_me": { "type": "checkbox", "source": "STATIC", "notes": "Optional; value 'on' to persist session" },
+        "_csrf_token": { "type": "string", "source": "AUTH_FLOW", "notes": "Extracted from login page HTML; token id = 'authenticate'" }
+      },
+      "response_key_fields": ["Set-Cookie: PHPSESSID", "Set-Cookie: REMEMBERME"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "log_out",
+      "endpoint": "GET /log_out",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token for logout; csrf_parameter name is 'token'" }
+      },
+      "form_params": {},
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "registration",
+      "endpoint": "POST /registration",
+      "auth": "none",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "user_type[username]": { "type": "string", "source": "TASK_SPEC", "notes": "Username; 3-25 chars" },
+        "user_type[password][first]": { "type": "string", "source": "TASK_SPEC", "notes": "Password" },
+        "user_type[password][second]": { "type": "string", "source": "TASK_SPEC", "notes": "Repeat password" },
+        "user_type[email]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional email" },
+        "user_type[phone]": { "type": "string", "source": "STATIC", "notes": "Honeypot — must be left empty" },
+        "user_type[verification]": { "type": "string", "source": "AUTH_FLOW", "notes": "Captcha answer if registration captcha enabled" },
+        "user_type[_token]": { "type": "string", "source": "AUTH_FLOW", "notes": "Symfony CSRF token extracted from form HTML" }
+      },
+      "response_key_fields": ["redirect to login link on success"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "submit",
+      "endpoint": "POST /submit/{forum_name}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC", "notes": "Optional; forum slug; can be omitted to pre-select from form field" }
+      },
+      "query_params": {},
+      "form_params": {
+        "submission[title]": { "type": "string", "source": "TASK_SPEC", "notes": "Post title; max 300 chars" },
+        "submission[url]": { "type": "string", "source": "TASK_SPEC", "notes": "URL for link posts; optional" },
+        "submission[body]": { "type": "markdown", "source": "TASK_SPEC", "notes": "Post body; optional" },
+        "submission[mediaType]": { "type": "string", "source": "STATIC", "notes": "One of: url, image; only present if user can upload images" },
+        "submission[image]": { "type": "file", "source": "TASK_SPEC", "notes": "Image file if mediaType=image; multipart/form-data required" },
+        "submission[forum]": { "type": "string", "source": "TASK_SPEC", "notes": "Forum name if not in path" },
+        "submission[userFlag]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional user/mod flair flag" },
+        "submission[email]": { "type": "string", "source": "STATIC", "notes": "Honeypot — must be left empty" },
+        "submission[_token]": { "type": "string", "source": "AUTH_FLOW", "notes": "Symfony CSRF token from form HTML" }
+      },
+      "response_key_fields": ["redirect to /f/{forum_name}/{submission_id}/{slug} on success"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "edit_submission",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/edit",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL", "from_endpoint": "submit", "from_field": "forum_name" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL", "from_endpoint": "submit", "from_field": "submission_id" },
+        "slug": { "type": "string", "source": "PREV_CALL", "from_endpoint": "submit", "from_field": "slug", "notes": "Can be '-' as placeholder" }
+      },
+      "query_params": {},
+      "form_params": {
+        "submission[title]": { "type": "string", "source": "TASK_SPEC" },
+        "submission[url]": { "type": "string", "source": "TASK_SPEC", "notes": "Only for url-type submissions" },
+        "submission[body]": { "type": "markdown", "source": "TASK_SPEC" },
+        "submission[userFlag]": { "type": "string", "source": "TASK_SPEC" },
+        "submission[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_delete_own",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/delete",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL", "notes": "Can be '-'" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'delete_submission'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_mod_delete",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/mod_delete",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "delete_reason[reason]": { "type": "string", "source": "TASK_SPEC", "notes": "Moderator deletion reason" },
+        "delete_reason[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_purge",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/purge",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'purge_submission'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_restore",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/restore",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'restore_submission'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "lock",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/lock",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'lock'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "unlock",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/unlock",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'lock'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "pin",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/pin",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'pin'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "unpin",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/unpin",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'pin'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_flair",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/flair",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "custom_text_flair[text]": { "type": "string", "source": "TASK_SPEC", "notes": "Flair text to apply" },
+        "custom_text_flair[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_remove_flairs",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/remove_flairs",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "id[]": { "type": "uuid[]", "source": "PREV_CALL", "notes": "Array of flair UUIDs to remove" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'remove_flair'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "submission_vote",
+      "endpoint": "POST /sv/{id}.{_format}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL", "from_endpoint": "submit or submission list", "from_field": "submission_id" },
+        "_format": { "type": "string", "source": "STATIC", "notes": "html or json; use json for AJAX" }
+      },
+      "query_params": {},
+      "form_params": {
+        "choice": { "type": "integer", "source": "STATIC", "notes": "1 = upvote, -1 = downvote, 0 = retract" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'vote'" }
+      },
+      "response_key_fields": ["netScore"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_post",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL", "notes": "Can be '-'" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL", "notes": "Parent comment ID for reply; omit/null for top-level reply to submission" }
+      },
+      "query_params": {},
+      "form_params": {
+        "reply_to_submission_{submissionId}[comment]": { "type": "markdown", "source": "TASK_SPEC", "notes": "Form name is 'reply_to_submission_{id}' for top-level, 'reply_to_comment_{id}' for replies; field path 'body'" },
+        "reply_to_submission_{submissionId}[userFlag]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional flair flag" },
+        "reply_to_submission_{submissionId}[email]": { "type": "string", "source": "STATIC", "notes": "Honeypot — must be left empty" },
+        "reply_to_submission_{submissionId}[_token]": { "type": "string", "source": "AUTH_FLOW", "notes": "Symfony CSRF token" }
+      },
+      "response_key_fields": ["redirect to comment anchor on success"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "edit_comment",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}/edit",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "comment[comment]": { "type": "markdown", "source": "TASK_SPEC" },
+        "comment[userFlag]": { "type": "string", "source": "TASK_SPEC" },
+        "comment[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_delete_own",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}/delete_own",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'delete_own_comment'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_delete",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}/delete",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "delete_reason[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "delete_reason[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_delete_thread",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}/delete_thread",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "delete_reason[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "delete_reason[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_purge",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}/purge",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'purge_comment'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_restore",
+      "endpoint": "POST /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}/restore",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'restore_comment'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "comment_vote",
+      "endpoint": "POST /cv/{id}.{_format}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL", "notes": "Comment ID" },
+        "_format": { "type": "string", "source": "STATIC", "notes": "html or json" }
+      },
+      "query_params": {},
+      "form_params": {
+        "choice": { "type": "integer", "source": "STATIC", "notes": "1 = upvote, -1 = downvote, 0 = retract" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'vote'" }
+      },
+      "response_key_fields": ["netScore"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "create_forum",
+      "endpoint": "POST /create_forum",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "forum[name]": { "type": "string", "source": "TASK_SPEC", "notes": "Forum slug; 3-25 chars" },
+        "forum[title]": { "type": "string", "source": "TASK_SPEC", "notes": "Forum display title" },
+        "forum[description]": { "type": "string", "source": "TASK_SPEC" },
+        "forum[sidebar]": { "type": "markdown", "source": "TASK_SPEC" },
+        "forum[tags]": { "type": "string[]", "source": "TASK_SPEC", "notes": "Array of tag names" },
+        "forum[moderationLogPublic]": { "type": "checkbox", "source": "TASK_SPEC", "notes": "Admins/mods only" },
+        "forum[featured]": { "type": "checkbox", "source": "TASK_SPEC", "notes": "ROLE_ADMIN only" },
+        "forum[email]": { "type": "string", "source": "STATIC", "notes": "Honeypot — must be left empty" },
+        "forum[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": ["redirect to /f/{forum_name}"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "edit_forum",
+      "endpoint": "POST /f/{forum_name}/edit",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "forum[name]": { "type": "string", "source": "TASK_SPEC" },
+        "forum[title]": { "type": "string", "source": "TASK_SPEC" },
+        "forum[description]": { "type": "string", "source": "TASK_SPEC" },
+        "forum[sidebar]": { "type": "markdown", "source": "TASK_SPEC" },
+        "forum[tags]": { "type": "string[]", "source": "TASK_SPEC" },
+        "forum[moderationLogPublic]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "forum[featured]": { "type": "checkbox", "source": "TASK_SPEC", "notes": "ROLE_ADMIN only" },
+        "forum[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "delete_forum",
+      "endpoint": "POST /f/{forum_name}/delete",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "confirm_deletion[name]": { "type": "string", "source": "DERIVED", "notes": "Must equal the forum name exactly" },
+        "confirm_deletion[confirm]": { "type": "checkbox", "source": "STATIC", "notes": "Must be checked" },
+        "confirm_deletion[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "forum_appearance",
+      "endpoint": "POST /f/{forum_name}/appearance",
+      "auth": "session_cookie+csrf",
+      "content_type": "multipart/form-data",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "forum_appearance[suggestedTheme]": { "type": "string", "source": "TASK_SPEC", "notes": "Theme UUID or empty" },
+        "forum_appearance[backgroundImage]": { "type": "file", "source": "TASK_SPEC", "notes": "Image file; only if user can upload images" },
+        "forum_appearance[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "subscribe",
+      "endpoint": "POST /f/{forum_name}/subscribe.{_format}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" },
+        "_format": { "type": "string", "source": "STATIC", "notes": "html or json" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'subscribe'" }
+      },
+      "response_key_fields": ["subscribed"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "unsubscribe",
+      "endpoint": "POST /f/{forum_name}/unsubscribe.{_format}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" },
+        "_format": { "type": "string", "source": "STATIC", "notes": "html or json" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'subscribe'" }
+      },
+      "response_key_fields": ["subscribed"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "add_moderator",
+      "endpoint": "POST /f/{forum_name}/add_moderator",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "moderator[user]": { "type": "string", "source": "TASK_SPEC", "notes": "Username to add as moderator" },
+        "moderator[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "remove_moderator",
+      "endpoint": "POST /f/{forum_name}/remove_moderator/{moderator_id}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" },
+        "moderator_id": { "type": "uuid", "source": "PREV_CALL", "notes": "Moderator record UUID from moderators list" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'remove_moderator'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "forum_ban",
+      "endpoint": "POST /f/{forum_name}/ban/{username}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" },
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "forum_ban[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "forum_ban[expires][date]": { "type": "date", "source": "TASK_SPEC", "notes": "Optional expiry date; format YYYY-MM-DD" },
+        "forum_ban[expires][time]": { "type": "time", "source": "TASK_SPEC", "notes": "Optional expiry time; format HH:MM" },
+        "forum_ban[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "forum_unban",
+      "endpoint": "POST /f/{forum_name}/unban/{username}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "TASK_SPEC" },
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "forum_ban[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "forum_ban[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "forum_tag_edit",
+      "endpoint": "POST /tag/{name}/edit",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "name": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "forum_tag[name]": { "type": "string", "source": "TASK_SPEC" },
+        "forum_tag[description]": { "type": "string", "source": "TASK_SPEC" },
+        "forum_tag[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "compose_message",
+      "endpoint": "POST /user/{username}/compose_message",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC", "notes": "Recipient username" }
+      },
+      "query_params": {},
+      "form_params": {
+        "message[body]": { "type": "string", "source": "TASK_SPEC" },
+        "message[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": ["redirect to /messages/thread/{id}; thread id from redirect"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "reply_to_message",
+      "endpoint": "POST /message_reply/{id}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL", "from_endpoint": "compose_message", "notes": "Thread ID" }
+      },
+      "query_params": {},
+      "form_params": {
+        "message[body]": { "type": "string", "source": "TASK_SPEC" },
+        "message[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "delete_message",
+      "endpoint": "POST /messages/message/{id}/delete",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "uuid", "source": "PREV_CALL", "notes": "Message UUID" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'delete_message'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "request_password_reset",
+      "endpoint": "POST /reset_password",
+      "auth": "none",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "request_password_reset[email]": { "type": "string", "source": "TASK_SPEC" },
+        "request_password_reset[verification]": { "type": "string", "source": "AUTH_FLOW", "notes": "Captcha answer" },
+        "request_password_reset[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "password_reset",
+      "endpoint": "POST /reset_password/{id}/{expires}/{checksum}",
+      "auth": "none",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "integer", "source": "AUTH_FLOW", "notes": "User ID from reset email link" },
+        "expires": { "type": "integer", "source": "AUTH_FLOW", "notes": "Unix timestamp from reset email link" },
+        "checksum": { "type": "string", "source": "AUTH_FLOW", "notes": "HMAC checksum from reset email link" }
+      },
+      "query_params": {},
+      "form_params": {
+        "user[username]": { "type": "string", "source": "TASK_SPEC" },
+        "user[password][first]": { "type": "string", "source": "TASK_SPEC" },
+        "user[password][second]": { "type": "string", "source": "TASK_SPEC" },
+        "user[email]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional" },
+        "user[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "edit_user",
+      "endpoint": "POST /user/{username}/account",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "AUTH_FLOW", "notes": "Must match authenticated user or admin" }
+      },
+      "query_params": {},
+      "form_params": {
+        "user[username]": { "type": "string", "source": "TASK_SPEC", "notes": "May be disabled if username change not allowed" },
+        "user[password][first]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional; leave blank to keep current" },
+        "user[password][second]": { "type": "string", "source": "TASK_SPEC" },
+        "user[email]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional" },
+        "user[phone]": { "type": "string", "source": "STATIC", "notes": "Honeypot — must be left empty" },
+        "user[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "user_settings",
+      "endpoint": "POST /user/{username}/preferences",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "query_params": {},
+      "form_params": {
+        "user_settings[locale]": { "type": "string", "source": "TASK_SPEC", "notes": "BCP47 locale code" },
+        "user_settings[frontPage]": { "type": "string", "source": "TASK_SPEC", "notes": "featured|subscribed|all|moderated" },
+        "user_settings[frontPageSortMode]": { "type": "string", "source": "TASK_SPEC", "notes": "hot|new|active" },
+        "user_settings[openExternalLinksInNewTab]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[autoFetchSubmissionTitles]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[enablePostPreviews]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[showThumbnails]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[notifyOnReply]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[notifyOnMentions]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[allowPrivateMessages]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[preferredFonts]": { "type": "string", "source": "TASK_SPEC" },
+        "user_settings[nightMode]": { "type": "string", "source": "TASK_SPEC", "notes": "0=auto, 1=light, 2=dark" },
+        "user_settings[preferredTheme]": { "type": "string", "source": "TASK_SPEC", "notes": "Theme UUID" },
+        "user_settings[showCustomStylesheets]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[poppersEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[fullWidthDisplayEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "user_settings[submissionLinkDestination]": { "type": "string", "source": "TASK_SPEC" },
+        "user_settings[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "edit_biography",
+      "endpoint": "POST /user/{username}/edit_biography",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "query_params": {},
+      "form_params": {
+        "user_biography[biography]": { "type": "markdown", "source": "TASK_SPEC" },
+        "user_biography[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "delete_account",
+      "endpoint": "POST /user/{username}/delete_account",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "query_params": {},
+      "form_params": {
+        "confirm_deletion[name]": { "type": "string", "source": "DERIVED", "notes": "Must equal the username exactly" },
+        "confirm_deletion[confirm]": { "type": "checkbox", "source": "STATIC" },
+        "confirm_deletion[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "block_user",
+      "endpoint": "POST /user/{username}/block_user",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC", "notes": "User to block" }
+      },
+      "query_params": {},
+      "form_params": {
+        "user_block[comment]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional private note about block" },
+        "user_block[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "unblock_user",
+      "endpoint": "POST /user/{username}/unblock_user",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'unblock'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "clear_notifications",
+      "endpoint": "POST /clear_notifications",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "id[]": { "type": "uuid[]", "source": "PREV_CALL", "notes": "Array of notification UUIDs to clear; omit to clear all" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'clear_notifications'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "user_whitelist",
+      "endpoint": "POST /user/{username}/whitelist",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'whitelist'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "user_dewhitelist",
+      "endpoint": "POST /user/{username}/dewhitelist",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'whitelist'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "hide_forum",
+      "endpoint": "POST /user/{username}/hide_forum/{forum}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "AUTH_FLOW" },
+        "forum": { "type": "string", "source": "TASK_SPEC", "notes": "Forum name" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'hide_forum'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "unhide_forum",
+      "endpoint": "POST /user/{username}/unhide_forum/{forum}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "AUTH_FLOW" },
+        "forum": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'hide_forum'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "change_night_mode",
+      "endpoint": "POST /night_mode.{_format}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "_format": { "type": "string", "source": "STATIC", "notes": "html or json" }
+      },
+      "query_params": {},
+      "form_params": {
+        "nightMode": { "type": "string", "source": "TASK_SPEC", "notes": "0=auto, 1=light, 2=dark" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'night_mode'" }
+      },
+      "response_key_fields": ["nightMode"]
+    },
+    {
+      "api_type": "form",
+      "route_name": "ban_user",
+      "endpoint": "POST /bans/ban_user/{username}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "ban_user[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "ban_user[expires][date]": { "type": "date", "source": "TASK_SPEC", "notes": "Optional; YYYY-MM-DD" },
+        "ban_user[expires][time]": { "type": "time", "source": "TASK_SPEC", "notes": "Optional; HH:MM" },
+        "ban_user[ban_ip]": { "type": "checkbox", "source": "TASK_SPEC", "notes": "Also ban associated IPs" },
+        "ban_user[ips]": { "type": "string", "source": "DERIVED", "notes": "Comma/newline-separated IP list; auto-populated from user history" },
+        "ban_user[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "unban_user",
+      "endpoint": "POST /bans/unban_user/{username}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "unban_user[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "unban_user[unban_ips]": { "type": "checkbox", "source": "TASK_SPEC", "notes": "Also lift associated IP bans" },
+        "unban_user[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "ban_ip",
+      "endpoint": "POST /bans/ban_ip",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "ip_ban[ip]": { "type": "string", "source": "TASK_SPEC", "notes": "IP address to ban" },
+        "ip_ban[reason]": { "type": "string", "source": "TASK_SPEC" },
+        "ip_ban[expires][date]": { "type": "date", "source": "TASK_SPEC", "notes": "Optional" },
+        "ip_ban[expires][time]": { "type": "time", "source": "TASK_SPEC", "notes": "Optional" },
+        "ip_ban[user]": { "type": "string", "source": "TASK_SPEC", "notes": "Optional; username associated with this IP" },
+        "ip_ban[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "unban_ips",
+      "endpoint": "POST /bans/unban_ips",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "ban[]": { "type": "integer[]", "source": "PREV_CALL", "notes": "Array of IP ban IDs to remove" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'unban_ips'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "bad_phrase_add",
+      "endpoint": "POST /site/bad_phrases/add",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "bad_phrase[phrase]": { "type": "string", "source": "TASK_SPEC" },
+        "bad_phrase[phraseType]": { "type": "string", "source": "STATIC", "notes": "text or regex" },
+        "bad_phrase[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "bad_phrase_remove",
+      "endpoint": "POST /site/bad_phrases/remove",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "remove_bad_phrase[]": { "type": "uuid[]", "source": "PREV_CALL", "notes": "Array of bad phrase UUIDs to remove" },
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'remove_bad_phrase'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "site_settings",
+      "endpoint": "POST /site/settings",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "site_settings[siteName]": { "type": "string", "source": "TASK_SPEC" },
+        "site_settings[registrationOpen]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[usernameChangeEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[unwhitelistedUserMessagesEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[defaultSortMode]": { "type": "string", "source": "TASK_SPEC", "notes": "hot|active|new" },
+        "site_settings[defaultTheme]": { "type": "string", "source": "TASK_SPEC", "notes": "Theme UUID or empty" },
+        "site_settings[urlImagesEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[trashEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[wikiEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[wikiLogPublic]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[forumCreateRole]": { "type": "string", "source": "TASK_SPEC", "notes": "ROLE_ADMIN|ROLE_WHITELISTED|ROLE_USER" },
+        "site_settings[moderatorsCanSetForumLogVisibility]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[imageUploadRole]": { "type": "string", "source": "TASK_SPEC" },
+        "site_settings[wikiEditRole]": { "type": "string", "source": "TASK_SPEC" },
+        "site_settings[registrationCaptchaEnabled]": { "type": "checkbox", "source": "TASK_SPEC" },
+        "site_settings[submissionLinkDestination]": { "type": "string", "source": "TASK_SPEC" },
+        "site_settings[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "theme_create_css",
+      "endpoint": "POST /site/themes/css/create",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "css_theme[name]": { "type": "string", "source": "TASK_SPEC" },
+        "css_theme[css]": { "type": "string", "source": "TASK_SPEC" },
+        "css_theme[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "theme_edit_css",
+      "endpoint": "POST /site/themes/css/{id}/edit",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "uuid", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "css_theme[name]": { "type": "string", "source": "TASK_SPEC" },
+        "css_theme[css]": { "type": "string", "source": "TASK_SPEC" },
+        "css_theme[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "theme_delete",
+      "endpoint": "POST /site/themes/{id}/delete",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "id": { "type": "uuid", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'delete_theme'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "theme_sync",
+      "endpoint": "POST /site/themes/sync",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'sync_themes'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "wiki_create",
+      "endpoint": "POST /wiki/_create/{path}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "path": { "type": "string", "source": "TASK_SPEC", "notes": "Wiki page path; can be empty to enter in form" }
+      },
+      "query_params": {},
+      "form_params": {
+        "wiki[path]": { "type": "string", "source": "TASK_SPEC", "notes": "Only present when path is empty" },
+        "wiki[title]": { "type": "string", "source": "TASK_SPEC" },
+        "wiki[body]": { "type": "markdown", "source": "TASK_SPEC" },
+        "wiki[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "wiki_edit",
+      "endpoint": "POST /wiki/_edit/{path}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "path": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "wiki[title]": { "type": "string", "source": "TASK_SPEC" },
+        "wiki[body]": { "type": "markdown", "source": "TASK_SPEC" },
+        "wiki[_token]": { "type": "string", "source": "AUTH_FLOW" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "wiki_delete",
+      "endpoint": "POST /wiki/_delete/{path}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "path": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'wiki_delete'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "wiki_lock",
+      "endpoint": "POST /wiki/_lock/{path}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "path": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'wiki_lock'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "form",
+      "route_name": "wiki_unlock",
+      "endpoint": "POST /wiki/_unlock/{path}",
+      "auth": "session_cookie+csrf",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {
+        "path": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "form_params": {
+        "token": { "type": "string", "source": "AUTH_FLOW", "notes": "CSRF token id = 'wiki_lock'" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "rest",
+      "route_name": "fetch_title",
+      "endpoint": "POST /ft.json",
+      "auth": "session_cookie",
+      "content_type": "application/x-www-form-urlencoded",
+      "path_params": {},
+      "query_params": {},
+      "form_params": {
+        "url": { "type": "string", "source": "TASK_SPEC", "notes": "URL whose title to fetch; must be a valid URL" }
+      },
+      "body_params": {},
+      "response_key_fields": ["title"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "user_popper",
+      "endpoint": "GET /_up/{username}",
+      "auth": "none",
+      "content_type": "none",
+      "path_params": {
+        "username": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["HTML fragment for user popover"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "comment_json",
+      "endpoint": "GET /f/{forum_name}/{submission_id}/{slug}/comment/{comment_id}.json",
+      "auth": "session_cookie",
+      "content_type": "none",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" },
+        "slug": { "type": "string", "source": "PREV_CALL" },
+        "comment_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "body", "author", "created_at", "net_score", "visibility"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "submission_json",
+      "endpoint": "GET /f/{forum_name}/{submission_id}.json",
+      "auth": "session_cookie",
+      "content_type": "none",
+      "path_params": {
+        "forum_name": { "type": "string", "source": "PREV_CALL" },
+        "submission_id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "title", "url", "body", "author", "forum", "created_at", "net_score"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_comments_list",
+      "endpoint": "GET /api/comments",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {},
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "body", "author", "submission", "created_at", "net_score"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_comment_read",
+      "endpoint": "GET /api/comments/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "body", "author", "submission", "created_at", "net_score"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_comment_update",
+      "endpoint": "PUT /api/comments/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {
+        "body": { "type": "string", "source": "TASK_SPEC", "notes": "Comment body markdown; denormalization group: comment:update" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_forum_read",
+      "endpoint": "GET /api/forums/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "name", "title", "description", "sidebar", "created_at", "subscriber_count"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_forum_read_by_name",
+      "endpoint": "GET /api/forums/by_name/{name}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "name": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "name", "title", "description", "sidebar", "created_at", "subscriber_count"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_forum_create",
+      "endpoint": "POST /api/forums",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {},
+      "query_params": {},
+      "body_params": {
+        "name": { "type": "string", "source": "TASK_SPEC", "notes": "Forum slug; denormalization group: forum:create" },
+        "title": { "type": "string", "source": "TASK_SPEC" },
+        "description": { "type": "string", "source": "TASK_SPEC" },
+        "sidebar": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "response_key_fields": ["id", "name"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_forum_update",
+      "endpoint": "PUT /api/forums/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {
+        "title": { "type": "string", "source": "TASK_SPEC", "notes": "denormalization group: forum:update" },
+        "description": { "type": "string", "source": "TASK_SPEC" },
+        "sidebar": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_submissions_list",
+      "endpoint": "GET /api/submissions",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {},
+      "query_params": {
+        "sortBy": { "type": "string", "source": "TASK_SPEC", "notes": "hot|new|active; defaults to user preference" },
+        "filter": { "type": "string", "source": "TASK_SPEC", "notes": "featured|subscribed|moderated|all; defaults to user preference" }
+      },
+      "body_params": {},
+      "response_key_fields": ["id", "title", "url", "body", "forum", "author", "created_at", "net_score"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_submission_read",
+      "endpoint": "GET /api/submissions/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "title", "url", "body", "forum", "author", "created_at", "net_score"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_submission_create",
+      "endpoint": "POST /api/submissions",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {},
+      "query_params": {},
+      "body_params": {
+        "title": { "type": "string", "source": "TASK_SPEC", "notes": "denormalization group: submission:create" },
+        "url": { "type": "string", "source": "TASK_SPEC" },
+        "body": { "type": "string", "source": "TASK_SPEC" },
+        "forum": { "type": "string|integer", "source": "TASK_SPEC", "notes": "Forum name or ID" },
+        "mediaType": { "type": "string", "source": "STATIC", "notes": "url|image" }
+      },
+      "response_key_fields": ["id", "forum", "title"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_submission_update",
+      "endpoint": "PUT /api/submissions/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {
+        "title": { "type": "string", "source": "TASK_SPEC", "notes": "denormalization group: submission:update" },
+        "url": { "type": "string", "source": "TASK_SPEC" },
+        "body": { "type": "string", "source": "TASK_SPEC" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_submission_delete",
+      "endpoint": "DELETE /api/submissions/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": []
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_submission_comments",
+      "endpoint": "GET /api/submissions/{id}/comments",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "body", "author", "net_score", "replies"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_user_read",
+      "endpoint": "GET /api/users/{id}",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "username", "created_at"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_user_self",
+      "endpoint": "GET /api/users/self",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {},
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "username"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_user_read_preferences",
+      "endpoint": "GET /api/users/{id}/preferences",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["locale", "front_page", "front_page_sort_mode", "night_mode", "notify_on_reply"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_user_update_preferences",
+      "endpoint": "PUT /api/users/{id}/preferences",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {
+        "locale": { "type": "string", "source": "TASK_SPEC", "notes": "denormalization group: user:preferences" },
+        "front_page": { "type": "string", "source": "TASK_SPEC" },
+        "front_page_sort_mode": { "type": "string", "source": "TASK_SPEC" },
+        "night_mode": { "type": "integer", "source": "TASK_SPEC" },
+        "notify_on_reply": { "type": "boolean", "source": "TASK_SPEC" },
+        "notify_on_mentions": { "type": "boolean", "source": "TASK_SPEC" }
+      },
+      "response_key_fields": []
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_user_submissions",
+      "endpoint": "GET /api/users/{id}/submissions",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["id", "title", "forum", "net_score"]
+    },
+    {
+      "api_type": "rest",
+      "route_name": "api_user_moderator_of",
+      "endpoint": "GET /api/users/{id}/moderator_of",
+      "auth": "session_cookie",
+      "content_type": "application/json",
+      "path_params": {
+        "id": { "type": "integer", "source": "PREV_CALL" }
+      },
+      "query_params": {},
+      "body_params": {},
+      "response_key_fields": ["entries[].forum", "entries[].user"]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+Metadata-Version: 2.4
+Name: openenv-harvestgym
+Version: 0.1.0
+Summary: HARvestGym: RL environment for training API-native web agents via HAR-guided exploration
+Requires-Python: >=3.10
+Requires-Dist: openenv-core[core]>=0.2.2
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: fastapi>=0.100.0
+Requires-Dist: uvicorn>=0.23.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: rank-bm25>=0.2.2
+Requires-Dist: openai>=1.0.0
+Requires-Dist: numpy>=1.24.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
+Provides-Extra: embeddings
+Requires-Dist: sentence-transformers>=3.0.0; extra == "embeddings"

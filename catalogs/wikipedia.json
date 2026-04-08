@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "generated": "2026-04-08",
+    "source": "hardcoded — kiwix-serve binary serves a static ZIM file; no application source to analyze",
+    "zim_file": "/data/wikipedia_en_all_maxi_2022-05.zim",
+    "search_response": "HTML only — GET /search returns HTML page; agent must parse <a href> links for article URLs",
+    "article_page": "GET /wikipedia_en_all_maxi_2022-05/A/{title} — returns HTML article",
+    "websockets": "none"
+  },
+  "endpoints": [
+    {
+      "api_type": "rest",
+      "endpoint": "GET /search",
+      "auth": "none",
+      "query_params": {
+        "pattern": {
+          "type": "string",
+          "source": "TASK_SPEC",
+          "notes": "the search query, URL-encoded"
+        },
+        "books.name": {
+          "type": "string",
+          "source": "STATIC",
+          "value": "wikipedia_en_all_maxi_2022-05",
+          "notes": "selects which ZIM book to search"
+        }
+      },
+      "response_key_fields": [],
+      "notes": "IMPORTANT: response is HTML, not JSON. Parse <a href> anchor links matching /wikipedia_en_all_maxi_2022-05/A/... to extract article slugs. The .results[0].url jq path does NOT apply — use HTML parsing."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "GET /wikipedia_en_all_maxi_2022-05/A/{article_title}",
+      "auth": "none",
+      "path_params": {
+        "article_title": {
+          "type": "string",
+          "source": "PREV_CALL",
+          "from_endpoint": "GET /search",
+          "from_field": "href attribute of first search result <a> tag",
+          "notes": "URL-encoded article slug, e.g. Albert_Einstein. Extract from the href on the search results HTML page. Verified live: HTTP 200 for valid titles."
+        }
+      },
+      "response_key_fields": [],
+      "notes": "Returns full HTML article page. HTTP 200 when article exists, 404 when not found."
+    }
+  ]
+}

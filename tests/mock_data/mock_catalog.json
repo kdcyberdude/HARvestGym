@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "generated": "2026-04-08",
+    "source": "mock catalog for testing"
+  },
+  "endpoints": [
+    {
+      "api_type": "rest",
+      "endpoint": "GET /rest/V1/categories",
+      "auth": "none",
+      "query_params": {},
+      "response_key_fields": ["id", "name", "children_data"],
+      "notes": "Returns the full category tree. No auth required."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "GET /rest/V1/products",
+      "auth": "none",
+      "query_params": {
+        "searchCriteria[filter_groups][0][filters][0][field]": {"type": "string", "source": "TASK_SPEC", "notes": "field name to filter on (e.g. 'name', 'sku')"},
+        "searchCriteria[filter_groups][0][filters][0][value]": {"type": "string", "source": "TASK_SPEC", "notes": "value to filter for"},
+        "searchCriteria[filter_groups][0][filters][0][condition_type]": {"type": "string", "source": "STATIC", "value": "like", "notes": "comparison operator"}
+      },
+      "response_key_fields": ["items[].sku", "items[].name", "items[].price", "total_count"],
+      "notes": "Search/list products. Use searchCriteria filters for targeted lookups."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "POST /rest/V1/guest-carts",
+      "auth": "none",
+      "body_params": {},
+      "response_key_fields": ["cartId (plain string in body)"],
+      "notes": "Creates a new guest cart. Returns the cartId as a plain quoted string."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "POST /rest/V1/guest-carts/{cartId}/items",
+      "auth": "none",
+      "path_params": {
+        "cartId": {"type": "string", "source": "PREV_CALL", "from_endpoint": "POST /rest/V1/guest-carts", "from_field": "response body"}
+      },
+      "body_params": {
+        "cartItem.sku": {"type": "string", "source": "PREV_CALL", "from_endpoint": "GET /rest/V1/products", "from_field": "items[].sku"},
+        "cartItem.qty": {"type": "number", "source": "TASK_SPEC", "notes": "quantity to add"},
+        "cartItem.quote_id": {"type": "string", "source": "DERIVED", "notes": "same value as cartId"}
+      },
+      "response_key_fields": ["item_id", "sku", "qty"],
+      "notes": "Add an item to a guest cart. cartId must exist first."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "POST /rest/V1/integration/customer/token",
+      "auth": "none",
+      "body_params": {
+        "username": {"type": "string", "source": "TASK_SPEC"},
+        "password": {"type": "string", "source": "TASK_SPEC"}
+      },
+      "response_key_fields": ["bearer token (plain string in body)"],
+      "notes": "Authenticate a customer. Returns a bearer token string."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "POST /rest/V1/guest-carts/{cartId}/estimate-shipping-methods",
+      "auth": "none",
+      "path_params": {
+        "cartId": {"type": "string", "source": "PREV_CALL", "from_endpoint": "POST /rest/V1/guest-carts", "from_field": "response body"}
+      },
+      "body_params": {
+        "address.city": {"type": "string", "source": "TASK_SPEC"},
+        "address.region_id": {"type": "number", "source": "TASK_SPEC"},
+        "address.postcode": {"type": "string", "source": "TASK_SPEC"},
+        "address.country_id": {"type": "string", "source": "TASK_SPEC"}
+      },
+      "response_key_fields": ["[].carrier_code", "[].method_code", "[].amount"],
+      "notes": "Get available shipping methods for a guest cart."
+    },
+    {
+      "api_type": "rest",
+      "endpoint": "GET /rest/V1/guest-carts/{cartId}/totals",
+      "auth": "none",
+      "path_params": {
+        "cartId": {"type": "string", "source": "PREV_CALL", "from_endpoint": "POST /rest/V1/guest-carts", "from_field": "response body"}
+      },
+      "response_key_fields": ["grand_total", "subtotal", "items[].item_id", "items[].price"],
+      "notes": "Get cart totals and line items."
+    }
+  ]
+}
