@@ -707,7 +707,7 @@ async def run_episode(task_config: dict, client: OpenAI) -> dict:
 
     rewards: List[float] = []
     steps_taken = 0
-    score = 0.001  # strict (0, 1) required by validator; 0.0 / 1.0 are rejected
+    score = 0.01  # strict (0, 1) required by validator; 0.0 / 1.0 are rejected
     success = False
     last_result = None
     history: List[dict] = []
@@ -790,7 +790,7 @@ async def run_episode(task_config: dict, client: OpenAI) -> dict:
         # Shift by +1.5 so that the fail reward (-1.5) maps to 0 and max maps to 1.
         _TEMPLATE_REWARD_CEIL = {1: 2.0, 3: 3.5, 6: 5.0}
         _reward_ceil = _TEMPLATE_REWARD_CEIL.get(task_config.get("template_id"), 5.0)
-        score = max(0.001, min(0.999, (total_reward + 1.5) / (_reward_ceil + 1.5)))
+        score = max(0.01, min(0.99, (total_reward + 1.5) / (_reward_ceil + 1.5)))
         success = total_reward >= 0.5   # any positive terminal reward = success
 
         vprint(f"\n[VERBOSE] ── episode end — {task_name} ──")
