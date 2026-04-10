@@ -25,7 +25,7 @@ The model starts with nothing: no schema, no documentation, no endpoint list. It
 
 ## Why It Matters
 
-The skill HARvestGym trains — discover an API, understand its dependencies, complete a task through it — is one of the most broadly useful things an AI agent can do.
+The environment HARvestGym trains — discover an API, understand its dependencies, complete a task through it — is one of the most broadly useful things an AI agent can do.
 
 | Application | What it unlocks |
 | --- | --- |
