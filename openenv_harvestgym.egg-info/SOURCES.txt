@@ -14,6 +14,7 @@ server/models.py
 server/tools/__init__.py
 server/tools/browser_agent.py
 server/tools/curl_exec.py
+server/tools/embed_cache.py
 server/tools/search_endpoints.py
 server/tools/search_episode_data.py
 tests/test_e2e_episode.py

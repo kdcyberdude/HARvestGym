@@ -140,23 +140,38 @@ def _get_curl_steps(episode: Episode):
 def grade_template_1(episode: Episode, task: Task) -> float:
     """Easy — Shopping: List products in category {category_name}"""
     category_name = task.params.get("category_name", "")
+    category_lower = category_name.lower()
 
     for step in _get_curl_steps(episode):
         cp = step.curl_parsed
         if cp.status_code == 200:
             body = cp.response_body
+            # REST API JSON response (ideal path: /rest/V1/products)
             if isinstance(body, dict) and "items" in body:
                 items = body["items"]
                 if len(items) > 0:
-                    # Check if any item mentions the category
                     for item in items:
                         if _item_matches_category(item, category_name):
                             return 1.0
-                    # Items returned but can't verify category — partial
                     return 0.3
-            # Also check if it's a raw list
+            # Raw list
             if isinstance(body, list) and len(body) > 0:
                 return 0.3
+            # Distilled HTML page (from html_distiller) — check for search results page
+            # that contains product forms.  page_type/forms/text are the distiller's keys.
+            if isinstance(body, dict) and "page_type" in body:
+                forms = body.get("forms", [])
+                text = body.get("text", "") or ""
+                title = (body.get("title") or "").lower()
+                # A search/category results page has multiple POST add-to-cart forms
+                product_forms = [f for f in forms if f.get("method") == "POST"
+                                 and "product" in f.get("fields", {})]
+                if product_forms:
+                    # Check that the page is about the requested category
+                    if category_lower in title or category_lower in text.lower():
+                        return 1.0
+                    # Products listed but category name not verifiable from title — partial
+                    return 0.5
 
     return 0.0
 
@@ -220,14 +235,14 @@ def grade_template_3(episode: Episode, task: Task) -> float:
     """Medium — Shopping: Add {product_name} to a guest cart"""
     product_name = task.params.get("product_name", "")
     sku = task.params.get("sku")
+    product_id = str(task.params.get("product_id", ""))
 
-    # Primary: check if add-to-cart responded with item_id
+    # Primary: REST API — check if add-to-cart responded with item_id
     for step in _get_curl_steps(episode):
         cp = step.curl_parsed
         if cp.status_code == 200:
             body = cp.response_body
             if isinstance(body, dict) and "item_id" in body:
-                # Verify the sku if we have it
                 if sku and body.get("sku") == sku:
                     return 1.0
                 if _fuzzy_match(str(body.get("name", "")), product_name):
@@ -235,7 +250,29 @@ def grade_template_3(episode: Episode, task: Task) -> float:
                 if body.get("item_id"):
                     return 1.0
 
-    # Try live probe
+    # Secondary: HTML form-based add-to-cart (POST to /checkout/cart/add)
+    # A 302 redirect or 200 response from this endpoint means item was accepted
+    for step in _get_curl_steps(episode):
+        cp = step.curl_parsed
+        if cp.method == "POST" and "/checkout/cart/add" in (cp.path or ""):
+            if cp.status_code in (200, 302):
+                # Optionally verify the correct product_id was posted
+                body_str = str(cp.body or "")
+                correct_product = (not product_id) or (product_id in body_str)
+
+                # Probe cart to confirm item presence
+                probe = _judge_probe("/checkout/cart/", task.base_url)
+                if probe and probe.status_code == 200:
+                    cart_text = (probe.body if isinstance(probe.body, str) else str(probe.body)).lower()
+                    # Cart page mentions product name or has quantity indicators
+                    if product_name.lower()[:15] in cart_text:
+                        return 1.0
+                    if "qty" in cart_text or "quantity" in cart_text or "item" in cart_text:
+                        return 0.8 if correct_product else 0.6
+                # POST succeeded without cart confirmation
+                return 0.7 if correct_product else 0.5
+
+    # Try live probe via REST guest-cart
     cart_id = _extract_cart_id(episode)
     if cart_id:
         probe = _judge_probe(f"/rest/V1/guest-carts/{cart_id}", task.base_url)
@@ -247,13 +284,13 @@ def grade_template_3(episode: Episode, task: Task) -> float:
                 if _fuzzy_match(str(item.get("name", "")), product_name):
                     return 1.0
             if len(items) == 0:
-                return 0.2  # cart created, item not added
+                return 0.2  # cart created, item not added yet
 
-    # Partial: cart was created
+    # Partial: REST cart was created
     if cart_id:
         return 0.2
 
-    # Partial: attempted cart creation
+    # Partial: attempted cart creation via REST
     if any("guest-carts" in (s.curl_parsed.path or "") and
            s.curl_parsed.method == "POST"
            for s in _get_curl_steps(episode)):
@@ -424,7 +461,7 @@ def grade_template_6(episode: Episode, task: Task) -> float:
 
 
 def _extract_admin_token(episode: Episode) -> str | None:
-    """Find admin bearer token from episode trajectory."""
+    """Find admin bearer token from shopping-admin trajectory (used by graders)."""
     for step in _get_curl_steps(episode):
         cp = step.curl_parsed
         if cp.status_code == 200 and "integration/admin/token" in cp.path:
@@ -432,6 +469,49 @@ def _extract_admin_token(episode: Episode) -> str | None:
             if isinstance(body, str) and len(body) > 10:
                 return body.strip('"').strip()
     return None
+
+
+def _check_any_auth_obtained(episode: Episode) -> bool:
+    """
+    Generic check: did the agent successfully obtain ANY form of authentication?
+
+    Detects:
+    - Forum/CSRF token authentication
+    - Shopping-admin integration token
+    - Any 200 response returning a bare token string (bearer, user token, API key)
+    - Any 200 response returning a dict with a token field (access_token, id_token, etc.)
+
+    Application-agnostic — the model discovers auth endpoints via browser_agent /
+    search_endpoints; this simply rewards the intermediate step of obtaining auth.
+    """
+    # Forum/CSRF auth
+    if _check_forum_auth(episode):
+        return True
+
+    # Shopping admin token
+    if _extract_admin_token(episode):
+        return True
+
+    # Generic: any successful response that looks like it returned an auth token
+    for step in _get_curl_steps(episode):
+        cp = step.curl_parsed
+        if cp.status_code != 200:
+            continue
+        body = cp.response_body
+
+        # Plain string token (e.g. Magento user/guest tokens, API keys)
+        if isinstance(body, str):
+            stripped = body.strip().strip('"')
+            if re.fullmatch(r"[A-Za-z0-9+/=_\-\.]{20,}", stripped):
+                return True
+
+        # Dict with a recognised token field
+        if isinstance(body, dict):
+            for k in ("token", "access_token", "id_token", "auth_token", "bearer"):
+                if k in body and isinstance(body[k], str) and len(body[k]) > 10:
+                    return True
+
+    return False
 
 
 def _attempted_product_creation(episode: Episode, sku: str) -> bool:
@@ -666,12 +746,15 @@ def evaluate(episode: Episode) -> EpisodeResult:
 
     task_score = grader(episode, task)
     param_score = verify_parameter_sourcing(episode, task)
-    auth_obtained = _check_forum_auth(episode) or bool(_extract_admin_token(episode))
+    auth_obtained = _check_any_auth_obtained(episode)
 
     # Compute reward
     reward = _score_to_reward(task_score, template_id)
 
-    # Bonus for auth obtained even on task failure
+    # Auth bonus: if the task failed but the agent successfully obtained any form
+    # of authentication (bearer token, session cookie, CSRF token, etc.), floor
+    # the reward at AUTH_BONUS.  This is application-agnostic — obtaining auth is
+    # a useful intermediate skill regardless of the specific task template.
     if task_score < 0.5 and auth_obtained:
         reward = max(reward, AUTH_BONUS)
 

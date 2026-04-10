@@ -375,31 +375,49 @@ def curl_exec(command: str, session_state: dict, episode_store: dict,
     except (json.JSONDecodeError, ValueError):
         parsed_body = body_text
 
-    # Extract tokens from body
-    _extract_tokens_from_body(parsed_body, session_state)
+    # Distil HTML responses into structured compact form
+    is_html_response = "text/html" in resp_ct
+    if is_html_response and isinstance(parsed_body, str) and parsed_body:
+        from .html_distiller import distill_html, distill_html_compact
+        distilled = distill_html(parsed_body, base_url=parsed["url"])
+        # Auto-extract form_key from HTML forms into session_state for reuse
+        for form in distilled.get("forms", []):
+            fk = form.get("fields", {}).get("form_key")
+            if fk and fk != "hidden":
+                session_state["form_key"] = fk
+                break
+        # Store the full distilled dict (not raw HTML) for search_episode_data
+        raw_body_for_store = distilled
+        # What we return to the agent is the compact text summary
+        truncated_body: Any = distill_html_compact(parsed_body, base_url=parsed["url"])
+    else:
+        raw_body_for_store = parsed_body
+        # Extract tokens from body (only for non-HTML responses)
+        _extract_tokens_from_body(parsed_body, session_state)
+        # Apply smart truncation
+        if status_code >= 400:
+            truncated_body = parsed_body
+        else:
+            body_for_truncation = body_text if isinstance(parsed_body, str) else json.dumps(parsed_body)
+            truncated_body = smart_truncate(body_for_truncation, resp_ct)
 
-    # Index into episode BM25 store BEFORE truncation
+    # Index into episode BM25 store
     _index_into_episode_store(
         episode_store=episode_store,
         request_body=parsed["body"],
-        response_body=parsed_body,
+        response_body=raw_body_for_store,
         url=parsed["url"],
         method=parsed["method"],
         status_code=status_code,
     )
 
-    # Apply smart truncation
-    if status_code >= 400:
-        # Never truncate errors
-        truncated_body = parsed_body
-    else:
-        body_for_truncation = body_text if isinstance(parsed_body, str) else json.dumps(parsed_body)
-        truncated_body = smart_truncate(body_for_truncation, resp_ct)
-
     return {
         "status_code": status_code,
         "headers": resp_headers,
         "body": truncated_body,
+        # _judge_body: full structured body for the judge (not shown to the model)
+        # For HTML: the distilled dict; for JSON/text: same as body
+        "_judge_body": raw_body_for_store,
     }
 
 
@@ -410,10 +428,18 @@ def curl_exec(command: str, session_state: dict, episode_store: dict,
 def _index_into_episode_store(episode_store: dict, request_body: Any,
                                response_body: Any, url: str, method: str,
                                status_code: int) -> None:
-    """Index request/response into episode BM25 store for search_episode_data()."""
+    """
+    Index request/response into the episode store for search_episode_data().
+
+    Three parallel structures are maintained:
+      bm25_corpus       — truncated text strings for BM25 / embedding (lean, fast)
+      bm25_metadata     — url/method/status_code per entry (no body, saves memory)
+      episode_raw_bodies — {index: full_untruncated_response_body} for retrieval
+    """
     if "bm25_corpus" not in episode_store:
         episode_store["bm25_corpus"] = []
         episode_store["bm25_metadata"] = []
+        episode_store["episode_raw_bodies"] = {}
 
     def _to_text(obj: Any) -> str:
         if obj is None:
@@ -422,13 +448,24 @@ def _index_into_episode_store(episode_store: dict, request_body: Any,
             return obj
         return json.dumps(obj)
 
-    entry_text = f"url: {url} | method: {method} | status: {status_code} | " \
-                 f"request: {_to_text(request_body)} | response: {_to_text(response_body)}"
+    # Lean text for BM25 / embedding — cap at 2000 chars so embeddings stay within
+    # the model's token limit without losing the key signal (url + first part of body).
+    # For distilled HTML (stored as a dict), serialize the distilled form — it's already
+    # compact (text content, blob keys, form actions) rather than raw HTML.
+    resp_text = _to_text(response_body)
+    lean_resp = resp_text[:2000] if len(resp_text) > 2000 else resp_text
 
+    entry_text = (
+        f"url: {url} method: {method} status: {status_code} "
+        f"request: {_to_text(request_body)} response: {lean_resp}"
+    )
+
+    idx = len(episode_store["bm25_corpus"])
     episode_store["bm25_corpus"].append(entry_text)
     episode_store["bm25_metadata"].append({
         "url": url,
         "method": method,
         "status_code": status_code,
-        "response_body": response_body,
     })
+    # Store full untruncated body keyed by index — never truncated
+    episode_store["episode_raw_bodies"][idx] = response_body

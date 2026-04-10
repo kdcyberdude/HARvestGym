@@ -192,6 +192,24 @@ When in doubt: check the endpoint schema returned by search_endpoints() — it s
 
 ---
 
+### 10. HAR Is the Agent's Only API Knowledge Source — No Catalog Fallback
+
+**Status:** Design decision, locked  
+**Detail:** The `browser_agent` tool uses **only the HAR file** to build the agent's endpoint index and embeddings. The API catalogs (`catalogs/*.json`) are used exclusively by the judge for parameter-sourcing grading — they play no role in the training loop.
+
+If a HAR yields very few endpoints, **the HAR recording needs to be improved**, not the code. The product does not patch sparse recordings by injecting catalog data into the agent's search corpus. This is intentional: the RL challenge is for the agent to discover and use APIs it has actually observed, not a curated ground-truth list.
+
+**What goes where:**
+
+| Data source | Who uses it | How |
+|---|---|---|
+| `hars/*.har` | Agent only | `browser_agent` → `search_endpoints` semantic search |
+| `catalogs/*.json` | Judge only | Parameter-sourcing grading (`judge.py`) |
+
+**Do not add catalog augmentation back** to `browser_agent.py` or `search_endpoints.py` under any circumstances. If the embed cache shows a large number of entries (e.g. 503 instead of 1), it means catalog entries leaked into the agent — clear the cache and fix the source.
+
+---
+
 ## Non-Issues (Resolved in Design)
 
 - ~~`store_finding` / `get_findings` tools~~ — **Removed**. Value threading happens through episode `history`.

@@ -4,7 +4,7 @@
     "generated_at": "2026-04-08",
     "source": {
       "categories": "GET /rest/V1/categories/list (live EC2, port 7780)",
-      "products": "GET /rest/V1/products type_id=simple + configurable (live EC2, port 7780)",
+      "products": "HTML scrape of search results page on live EC2 store (port 7770) \u2014 product_id is the Magento entity ID used in add-to-cart forms; sku is PROD-{product_id} as the store REST API is auth-gated",
       "forums": "HTML scrape of /forums page (live EC2, port 9999) + HTTP 200 verification per slug",
       "wikipedia": "Well-known Wikipedia titles \u2014 verified by grader at runtime via HEAD /wikipedia_en.../A/{slug}",
       "admin_skus": "Generated (HAR-TEST-NNN namespace, no collision with existing catalog)",
@@ -13,10 +13,10 @@
     "grader_matching_notes": {
       "template_1": "category_id stored for grader; category_name is what appears in task string",
       "template_2": "expected_slug stored for grader (verifies HTTP 200); display title is in task string",
-      "template_3": "sku stored for grader (verifies cart item); product name is in task string",
+      "template_3": "product_id stored for grader (checks POST /checkout/cart/add + cart probe); product name is in task string for HTML search flow",
       "template_4": "forum_name must exist and return posts; no exact value matching needed",
       "template_5": "title is free-form generated; grader only checks post was created in that forum",
-      "template_6": "sku stored for grader (verifies order was placed); product name is in task string",
+      "template_6": "product_id stored for grader; name is in task string; checkout grader checks REST guest-cart stages OR HTML checkout flow",
       "template_7": "sku+price are exact \u2014 grader calls GET /rest/V1/products/{sku} to verify creation"
     }
   },
@@ -30,148 +30,36 @@
     "pool": {
       "category_name": [
         {
-          "name": "Gear",
-          "category_id": 3
-        },
-        {
           "name": "Bags",
           "category_id": 4
         },
         {
-          "name": "Fitness Equipment",
-          "category_id": 5
+          "name": "Backpack",
+          "category_id": 4
         },
         {
-          "name": "Watches",
-          "category_id": 6
-        },
-        {
-          "name": "New Luma Yoga Collection",
-          "category_id": 8
-        },
-        {
-          "name": "Training",
-          "category_id": 9
-        },
-        {
-          "name": "Video Download",
-          "category_id": 10
-        },
-        {
-          "name": "Men",
+          "name": "Jackets",
           "category_id": 11
         },
         {
-          "name": "Tops",
-          "category_id": 12
+          "name": "Hoodies",
+          "category_id": 9
         },
         {
-          "name": "Bottoms",
+          "name": "Pants",
           "category_id": 13
         },
         {
-          "name": "Jackets",
-          "category_id": 14
+          "name": "Shoes",
+          "category_id": 3
         },
         {
-          "name": "Hoodies & Sweatshirts",
-          "category_id": 15
+          "name": "Boots",
+          "category_id": 3
         },
         {
-          "name": "Tees",
-          "category_id": 16
-        },
-        {
-          "name": "Tanks",
-          "category_id": 17
-        },
-        {
-          "name": "Pants",
-          "category_id": 18
-        },
-        {
-          "name": "Shorts",
-          "category_id": 19
-        },
-        {
-          "name": "Women",
-          "category_id": 20
-        },
-        {
-          "name": "Tops",
-          "category_id": 21
-        },
-        {
-          "name": "Bottoms",
-          "category_id": 22
-        },
-        {
-          "name": "Jackets",
-          "category_id": 23
-        },
-        {
-          "name": "Hoodies & Sweatshirts",
-          "category_id": 24
-        },
-        {
-          "name": "Tees",
-          "category_id": 25
-        },
-        {
-          "name": "Bras & Tanks",
-          "category_id": 26
-        },
-        {
-          "name": "Pants",
-          "category_id": 27
-        },
-        {
-          "name": "Shorts",
-          "category_id": 28
-        },
-        {
-          "name": "Women Sale",
-          "category_id": 30
-        },
-        {
-          "name": "Men Sale",
-          "category_id": 31
-        },
-        {
-          "name": "Pants",
-          "category_id": 32
-        },
-        {
-          "name": "Tees",
-          "category_id": 33
-        },
-        {
-          "name": "Erin Recommends",
-          "category_id": 34
-        },
-        {
-          "name": "Performance Fabrics",
-          "category_id": 35
-        },
-        {
-          "name": "Eco Friendly",
-          "category_id": 36
-        },
-        {
-          "name": "Sale",
-          "category_id": 37
-        },
-        {
-          "name": "What's New",
-          "category_id": 38
-        },
-        {
-          "name": "Performance Sportswear New",
-          "category_id": 39
-        },
-        {
-          "name": "Eco Collection New",
-          "category_id": 40
+          "name": "Slippers",
+          "category_id": 3
         }
       ]
     }
@@ -298,236 +186,94 @@
     "pool": {
       "product_name": [
         {
-          "name": "Joust Duffle Bag",
-          "sku": "24-MB01"
+          "name": "Camera Backpack Bagsmar DSLR Waterproof",
+          "sku": "PROD-89940",
+          "product_id": 89940
         },
         {
-          "name": "Strive Shoulder Pack",
-          "sku": "24-MB04"
+          "name": "Totes Womens Cold Weather Boots Nicole",
+          "sku": "PROD-29409",
+          "product_id": 29409
         },
         {
-          "name": "Crown Summit Backpack",
-          "sku": "24-MB03"
+          "name": "Totes Womens Snow Boots Jami Lace Up",
+          "sku": "PROD-83651",
+          "product_id": 83651
         },
         {
-          "name": "Wayfarer Messenger Bag",
-          "sku": "24-MB05"
+          "name": "Noldares Flannel Jacket For Men Plaid",
+          "sku": "PROD-59237",
+          "product_id": 59237
         },
         {
-          "name": "Rival Field Messenger",
-          "sku": "24-MB06"
+          "name": "Inesver Womens Leather Jacket Open Front",
+          "sku": "PROD-30743",
+          "product_id": 30743
         },
         {
-          "name": "Fusion Backpack",
-          "sku": "24-MB02"
+          "name": "Womens Corduroy Coat Plaid Hoodie Long Jacket",
+          "sku": "PROD-13227",
+          "product_id": 13227
         },
         {
-          "name": "Impulse Duffle",
-          "sku": "24-UB02"
+          "name": "Womens Fleece Jacket With Hood Winter",
+          "sku": "PROD-60773",
+          "product_id": 60773
         },
         {
-          "name": "Voyage Yoga Bag",
-          "sku": "24-WB01"
+          "name": "Champion Hoodie Big And Tall Zip Up",
+          "sku": "PROD-64850",
+          "product_id": 64850
         },
         {
-          "name": "Compete Track Tote",
-          "sku": "24-WB02"
+          "name": "Matching Couples Hoodie Set",
+          "sku": "PROD-60915",
+          "product_id": 60915
         },
         {
-          "name": "Savvy Shoulder Tote",
-          "sku": "24-WB05"
+          "name": "Mens Novelty 3D Printed Pullover Hoodie",
+          "sku": "PROD-62228",
+          "product_id": 62228
         },
         {
-          "name": "Endeavor Daytrip Backpack",
-          "sku": "24-WB06"
+          "name": "Mens Slim Fit Cargo Pants Athletic",
+          "sku": "PROD-65987",
+          "product_id": 65987
         },
         {
-          "name": "Driven Backpack",
-          "sku": "24-WB03"
+          "name": "Mens Ripstop Cargo Pants Tactical Hiking",
+          "sku": "PROD-10245",
+          "product_id": 10245
         },
         {
-          "name": "Overnight Duffle",
-          "sku": "24-WB07"
+          "name": "Womens Flowy Boho Harem Pants Yoga",
+          "sku": "PROD-64374",
+          "product_id": 64374
         },
         {
-          "name": "Push It Messenger Bag",
-          "sku": "24-WB04"
+          "name": "Womens High Waist Harem Pants Stripe",
+          "sku": "PROD-61333",
+          "product_id": 61333
         },
         {
-          "name": "Affirm Water Bottle",
-          "sku": "24-UG06"
+          "name": "Shoeslocker Womens Cozy Memory Foam Slippers",
+          "sku": "PROD-94779",
+          "product_id": 94779
         },
         {
-          "name": "Dual Handle Cardio Ball",
-          "sku": "24-UG07"
+          "name": "Mens Canvas Korean Fashion Casual Shoes",
+          "sku": "PROD-60868",
+          "product_id": 60868
         },
         {
-          "name": "Zing Jump Rope",
-          "sku": "24-UG04"
+          "name": "Unisex Diving Shoes Ultralight Anti Slip",
+          "sku": "PROD-12364",
+          "product_id": 12364
         },
         {
-          "name": "Pursuit Lumaflex&trade; Tone Band",
-          "sku": "24-UG02"
-        },
-        {
-          "name": "Go-Get'r Pushup Grips",
-          "sku": "24-UG05"
-        },
-        {
-          "name": "Quest Lumaflex&trade; Band",
-          "sku": "24-UG01"
-        },
-        {
-          "name": "Sprite Foam Yoga Brick",
-          "sku": "24-WG084"
-        },
-        {
-          "name": "Sprite Foam Roller",
-          "sku": "24-WG088"
-        },
-        {
-          "name": "Harmony Lumaflex&trade; Strength Band Kit",
-          "sku": "24-UG03"
-        },
-        {
-          "name": "Sprite Stasis Ball 55 cm",
-          "sku": "24-WG081-gray"
-        },
-        {
-          "name": "Sprite Stasis Ball 65 cm",
-          "sku": "24-WG082-gray"
-        },
-        {
-          "name": "Sprite Stasis Ball 75 cm",
-          "sku": "24-WG083-gray"
-        },
-        {
-          "name": "Sprite Yoga Strap 6 foot",
-          "sku": "24-WG085"
-        },
-        {
-          "name": "Sprite Yoga Strap 8 foot",
-          "sku": "24-WG086"
-        },
-        {
-          "name": "Sprite Yoga Strap 10 foot",
-          "sku": "24-WG087"
-        },
-        {
-          "name": "Aim Analog Watch",
-          "sku": "24-MG04"
-        },
-        {
-          "name": "Endurance Watch",
-          "sku": "24-MG01"
-        },
-        {
-          "name": "Summit Watch",
-          "sku": "24-MG03"
-        },
-        {
-          "name": "Cruise Dual Analog Watch",
-          "sku": "24-MG05"
-        },
-        {
-          "name": "Dash Digital Watch",
-          "sku": "24-MG02"
-        },
-        {
-          "name": "Luma Analog Watch",
-          "sku": "24-WG09"
-        },
-        {
-          "name": "Bolo Sport Watch",
-          "sku": "24-WG01"
-        },
-        {
-          "name": "Clamber Watch",
-          "sku": "24-WG03"
-        },
-        {
-          "name": "Didi Sport Watch",
-          "sku": "24-WG02"
-        },
-        {
-          "name": "Stellar Solar Jacket",
-          "sku": "WJ01"
-        },
-        {
-          "name": "Josie Yoga Jacket",
-          "sku": "WJ02"
-        },
-        {
-          "name": "Augusta Pullover Jacket",
-          "sku": "WJ03"
-        },
-        {
-          "name": "Ingrid Running Jacket",
-          "sku": "WJ04"
-        },
-        {
-          "name": "Riona Full Zip Jacket",
-          "sku": "WJ05"
-        },
-        {
-          "name": "Juno Jacket",
-          "sku": "WJ06"
-        },
-        {
-          "name": "Inez Full Zip Jacket",
-          "sku": "WJ07"
-        },
-        {
-          "name": "Adrienne Trek Jacket",
-          "sku": "WJ08"
-        },
-        {
-          "name": "Jade Yoga Jacket",
-          "sku": "WJ09"
-        },
-        {
-          "name": "Nadia Elements Shell",
-          "sku": "WJ10"
-        },
-        {
-          "name": "Neve Studio Dance Jacket",
-          "sku": "WJ11"
-        },
-        {
-          "name": "Olivia 1/4 Zip Light Jacket",
-          "sku": "WJ12"
-        },
-        {
-          "name": "Chaz Kangeroo Hoodie",
-          "sku": "MH01"
-        },
-        {
-          "name": "Teton Pullover Hoodie",
-          "sku": "MH02"
-        },
-        {
-          "name": "Bruno Compete Hoodie",
-          "sku": "MH03"
-        },
-        {
-          "name": "Frankie  Sweatshirt",
-          "sku": "MH04"
-        },
-        {
-          "name": "Hollister Backyard Sweatshirt",
-          "sku": "MH05"
-        },
-        {
-          "name": "Stark Fundamental Hoodie",
-          "sku": "MH06"
-        },
-        {
-          "name": "Hero Hoodie",
-          "sku": "MH07"
-        },
-        {
-          "name": "Oslo Trek Hoodie",
-          "sku": "MH08"
+          "name": "Womens Loafers Fashion Retro Single Shoes",
+          "sku": "PROD-63738",
+          "product_id": 63738
         }
       ]
     }
@@ -739,236 +485,94 @@
     "pool": {
       "product_name": [
         {
-          "name": "Joust Duffle Bag",
-          "sku": "24-MB01"
+          "name": "Camera Backpack Bagsmar DSLR Waterproof",
+          "sku": "PROD-89940",
+          "product_id": 89940
         },
         {
-          "name": "Strive Shoulder Pack",
-          "sku": "24-MB04"
+          "name": "Totes Womens Cold Weather Boots Nicole",
+          "sku": "PROD-29409",
+          "product_id": 29409
         },
         {
-          "name": "Crown Summit Backpack",
-          "sku": "24-MB03"
+          "name": "Totes Womens Snow Boots Jami Lace Up",
+          "sku": "PROD-83651",
+          "product_id": 83651
         },
         {
-          "name": "Wayfarer Messenger Bag",
-          "sku": "24-MB05"
+          "name": "Noldares Flannel Jacket For Men Plaid",
+          "sku": "PROD-59237",
+          "product_id": 59237
         },
         {
-          "name": "Rival Field Messenger",
-          "sku": "24-MB06"
+          "name": "Inesver Womens Leather Jacket Open Front",
+          "sku": "PROD-30743",
+          "product_id": 30743
         },
         {
-          "name": "Fusion Backpack",
-          "sku": "24-MB02"
+          "name": "Womens Corduroy Coat Plaid Hoodie Long Jacket",
+          "sku": "PROD-13227",
+          "product_id": 13227
         },
         {
-          "name": "Impulse Duffle",
-          "sku": "24-UB02"
+          "name": "Womens Fleece Jacket With Hood Winter",
+          "sku": "PROD-60773",
+          "product_id": 60773
         },
         {
-          "name": "Voyage Yoga Bag",
-          "sku": "24-WB01"
+          "name": "Champion Hoodie Big And Tall Zip Up",
+          "sku": "PROD-64850",
+          "product_id": 64850
         },
         {
-          "name": "Compete Track Tote",
-          "sku": "24-WB02"
+          "name": "Matching Couples Hoodie Set",
+          "sku": "PROD-60915",
+          "product_id": 60915
         },
         {
-          "name": "Savvy Shoulder Tote",
-          "sku": "24-WB05"
+          "name": "Mens Novelty 3D Printed Pullover Hoodie",
+          "sku": "PROD-62228",
+          "product_id": 62228
         },
         {
-          "name": "Endeavor Daytrip Backpack",
-          "sku": "24-WB06"
+          "name": "Mens Slim Fit Cargo Pants Athletic",
+          "sku": "PROD-65987",
+          "product_id": 65987
         },
         {
-          "name": "Driven Backpack",
-          "sku": "24-WB03"
+          "name": "Mens Ripstop Cargo Pants Tactical Hiking",
+          "sku": "PROD-10245",
+          "product_id": 10245
         },
         {
-          "name": "Overnight Duffle",
-          "sku": "24-WB07"
+          "name": "Womens Flowy Boho Harem Pants Yoga",
+          "sku": "PROD-64374",
+          "product_id": 64374
         },
         {
-          "name": "Push It Messenger Bag",
-          "sku": "24-WB04"
+          "name": "Womens High Waist Harem Pants Stripe",
+          "sku": "PROD-61333",
+          "product_id": 61333
         },
         {
-          "name": "Affirm Water Bottle",
-          "sku": "24-UG06"
+          "name": "Shoeslocker Womens Cozy Memory Foam Slippers",
+          "sku": "PROD-94779",
+          "product_id": 94779
         },
         {
-          "name": "Dual Handle Cardio Ball",
-          "sku": "24-UG07"
+          "name": "Mens Canvas Korean Fashion Casual Shoes",
+          "sku": "PROD-60868",
+          "product_id": 60868
         },
         {
-          "name": "Zing Jump Rope",
-          "sku": "24-UG04"
+          "name": "Unisex Diving Shoes Ultralight Anti Slip",
+          "sku": "PROD-12364",
+          "product_id": 12364
         },
         {
-          "name": "Pursuit Lumaflex&trade; Tone Band",
-          "sku": "24-UG02"
-        },
-        {
-          "name": "Go-Get'r Pushup Grips",
-          "sku": "24-UG05"
-        },
-        {
-          "name": "Quest Lumaflex&trade; Band",
-          "sku": "24-UG01"
-        },
-        {
-          "name": "Sprite Foam Yoga Brick",
-          "sku": "24-WG084"
-        },
-        {
-          "name": "Sprite Foam Roller",
-          "sku": "24-WG088"
-        },
-        {
-          "name": "Harmony Lumaflex&trade; Strength Band Kit",
-          "sku": "24-UG03"
-        },
-        {
-          "name": "Sprite Stasis Ball 55 cm",
-          "sku": "24-WG081-gray"
-        },
-        {
-          "name": "Sprite Stasis Ball 65 cm",
-          "sku": "24-WG082-gray"
-        },
-        {
-          "name": "Sprite Stasis Ball 75 cm",
-          "sku": "24-WG083-gray"
-        },
-        {
-          "name": "Sprite Yoga Strap 6 foot",
-          "sku": "24-WG085"
-        },
-        {
-          "name": "Sprite Yoga Strap 8 foot",
-          "sku": "24-WG086"
-        },
-        {
-          "name": "Sprite Yoga Strap 10 foot",
-          "sku": "24-WG087"
-        },
-        {
-          "name": "Aim Analog Watch",
-          "sku": "24-MG04"
-        },
-        {
-          "name": "Endurance Watch",
-          "sku": "24-MG01"
-        },
-        {
-          "name": "Summit Watch",
-          "sku": "24-MG03"
-        },
-        {
-          "name": "Cruise Dual Analog Watch",
-          "sku": "24-MG05"
-        },
-        {
-          "name": "Dash Digital Watch",
-          "sku": "24-MG02"
-        },
-        {
-          "name": "Luma Analog Watch",
-          "sku": "24-WG09"
-        },
-        {
-          "name": "Bolo Sport Watch",
-          "sku": "24-WG01"
-        },
-        {
-          "name": "Clamber Watch",
-          "sku": "24-WG03"
-        },
-        {
-          "name": "Didi Sport Watch",
-          "sku": "24-WG02"
-        },
-        {
-          "name": "Stellar Solar Jacket",
-          "sku": "WJ01"
-        },
-        {
-          "name": "Josie Yoga Jacket",
-          "sku": "WJ02"
-        },
-        {
-          "name": "Augusta Pullover Jacket",
-          "sku": "WJ03"
-        },
-        {
-          "name": "Ingrid Running Jacket",
-          "sku": "WJ04"
-        },
-        {
-          "name": "Riona Full Zip Jacket",
-          "sku": "WJ05"
-        },
-        {
-          "name": "Juno Jacket",
-          "sku": "WJ06"
-        },
-        {
-          "name": "Inez Full Zip Jacket",
-          "sku": "WJ07"
-        },
-        {
-          "name": "Adrienne Trek Jacket",
-          "sku": "WJ08"
-        },
-        {
-          "name": "Jade Yoga Jacket",
-          "sku": "WJ09"
-        },
-        {
-          "name": "Nadia Elements Shell",
-          "sku": "WJ10"
-        },
-        {
-          "name": "Neve Studio Dance Jacket",
-          "sku": "WJ11"
-        },
-        {
-          "name": "Olivia 1/4 Zip Light Jacket",
-          "sku": "WJ12"
-        },
-        {
-          "name": "Chaz Kangeroo Hoodie",
-          "sku": "MH01"
-        },
-        {
-          "name": "Teton Pullover Hoodie",
-          "sku": "MH02"
-        },
-        {
-          "name": "Bruno Compete Hoodie",
-          "sku": "MH03"
-        },
-        {
-          "name": "Frankie  Sweatshirt",
-          "sku": "MH04"
-        },
-        {
-          "name": "Hollister Backyard Sweatshirt",
-          "sku": "MH05"
-        },
-        {
-          "name": "Stark Fundamental Hoodie",
-          "sku": "MH06"
-        },
-        {
-          "name": "Hero Hoodie",
-          "sku": "MH07"
-        },
-        {
-          "name": "Oslo Trek Hoodie",
-          "sku": "MH08"
+          "name": "Womens Loafers Fashion Retro Single Shoes",
+          "sku": "PROD-63738",
+          "product_id": 63738
         }
       ]
     }

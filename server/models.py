@@ -75,6 +75,8 @@ REWARD_NEW_PATH = 0.1            # curl path not seen before this episode
 REWARD_CORRECT_PARAM = 0.25      # judge: correct parameter sourcing (applied at end)
 REWARD_SESSION_VALUE = 0.1       # auth token/cookie correctly used
 PENALTY_REPEATED_CALL = -0.15    # exact duplicate curl command
+PENALTY_REPEATED_DIFF_PARAM_CALL = -0.05    # duplicate curl but with different parameters
+PENALTY_REPEATED_PATH = -0.15    # same (method, normalised path) called more than once
 PENALTY_BROWSER_AGENT_AGAIN = -0.3  # browser_agent called after step 1
 PENALTY_MALFORMED_CURL = -0.1    # curl can't be parsed/executed
 PENALTY_4XX = -0.05              # recoverable HTTP error
@@ -103,14 +105,49 @@ TASK_NAME_TO_TEMPLATE = {
     "har_pipeline_hard": 6,
 }
 
-TEMPLATE_DESCRIPTIONS = {
-    1: "List products in category {category_name}",
-    2: "Retrieve the Wikipedia article for '{title}'",
-    3: "Add '{product_name}' to a guest cart",
-    4: "Retrieve all posts in the '{forum_category}' forum (you must log in first)",
-    5: "Create a forum post titled '{title}' in the '{category}' forum",
-    6: "Complete a guest checkout for '{product_name}'",
-    7: "Create a new product in the admin panel with SKU '{sku}' and price {price}",
+TEMPLATE_DESCRIPTIONS: dict[int, list[str]] = {
+    1: [
+        "List products in category {category_name}",
+        "Show all products under the {category_name} category",
+        "Fetch the product listing for the '{category_name}' category",
+        "What products are available in the {category_name} category?",
+    ],
+    2: [
+        "Retrieve the Wikipedia article for '{title}'",
+        "Fetch the Wikipedia page about '{title}'",
+        "Get the Wikipedia entry for '{title}'",
+        "Look up '{title}' on Wikipedia and return the article",
+    ],
+    3: [
+        "Find '{product_name}' in the store and add it to the shopping cart",
+        "Add '{product_name}' to the cart",
+        "Shop for '{product_name}' and put it in the cart",
+        "I want to buy '{product_name}' — add it to my cart",
+    ],
+    4: [
+        "Retrieve all posts in the '{forum_category}' forum (you must log in first)",
+        "Fetch the post list for the '{forum_category}' forum category",
+        "Get all threads in the '{forum_category}' forum section",
+        "List the forum posts under '{forum_category}' (authentication required)",
+    ],
+    5: [
+        "Create a post titled '{title}' in the '{category}' forum. Note: authentication is required.",
+        "Post a new thread called '{title}' in the '{category}' forum",
+        "Submit a forum post with the title '{title}' to the '{category}' section",
+        "Publish '{title}' as a new post in the '{category}' forum",
+    ],
+    6: [
+        "Complete a full guest checkout for '{product_name}'. The checkout involves multiple dependent steps — each step produces a value needed by the next. The task is complete when a confirmed order is placed.",
+        "Place a guest order for '{product_name}'. The process spans several API calls that build on each other; you are done when an order confirmation is received.",
+        "Buy '{product_name}' as a guest user and complete the checkout. Each stage of the checkout requires information returned by the previous stage.",
+        "Finish a guest checkout for '{product_name}'. Work through each step in sequence — the output of every step feeds into the next — until the order is confirmed.",
+    ],
+    7: [
+        "Create a new product in the admin panel with SKU '{sku}' and price {price}. Admin access is required.",
+        "Add a product to the catalog via the admin interface: SKU '{sku}', price {price}",
+        "As an admin, create a new product listing with SKU '{sku}' priced at {price}",
+        "Use admin credentials to create a product with SKU '{sku}' and a price of {price}",
+    ],
 }
 
 
@@ -139,7 +176,7 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         items = pool.get("category_name", [{"name": "Gear", "category_id": 3}])
         chosen = random.choice(items)
         params = {"category_name": chosen["name"], "category_id": chosen.get("category_id")}
-        description = TEMPLATE_DESCRIPTIONS[1].format(**params)
+        description = random.choice(TEMPLATE_DESCRIPTIONS[1]).format(**params)
 
     elif template_id == 2:
         items = pool.get("title", [{"title": "Python (programming language)", "expected_slug": "Python_(programming_language)"}])
@@ -148,7 +185,7 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         chosen = random.choice(items)
         title = chosen.get("title", chosen) if isinstance(chosen, dict) else chosen
         params = {"title": title, "expected_slug": chosen.get("expected_slug", title.replace(" ", "_"))}
-        description = TEMPLATE_DESCRIPTIONS[2].format(**params)
+        description = random.choice(TEMPLATE_DESCRIPTIONS[2]).format(**params)
 
     elif template_id == 3:
         items = pool.get("product_name", [{"name": "Radiant Tee", "sku": "MH01"}])
@@ -157,8 +194,11 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         chosen = random.choice(items)
         product_name = chosen.get("name", chosen) if isinstance(chosen, dict) else chosen
         sku = chosen.get("sku", "") if isinstance(chosen, dict) else ""
+        product_id = chosen.get("product_id") if isinstance(chosen, dict) else None
         params = {"product_name": product_name, "sku": sku}
-        description = TEMPLATE_DESCRIPTIONS[3].format(**params)
+        if product_id:
+            params["product_id"] = product_id
+        description = random.choice(TEMPLATE_DESCRIPTIONS[3]).format(**params)
 
     elif template_id == 4:
         items = pool.get("forum_category", [{"slug": "general", "name": "General"}])
@@ -167,7 +207,7 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         chosen = random.choice(items)
         forum_cat = chosen.get("slug", chosen.get("name", "general")) if isinstance(chosen, dict) else chosen
         params = {"forum_category": forum_cat}
-        description = TEMPLATE_DESCRIPTIONS[4].format(**params)
+        description = random.choice(TEMPLATE_DESCRIPTIONS[4]).format(**params)
 
     elif template_id == 5:
         categories = pool.get("forum_category", [{"slug": "general"}])
@@ -180,7 +220,7 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         chosen_title = random.choice(titles) if isinstance(titles[0], str) else random.choice(titles).get("title", "Test post")
         forum_cat = chosen_cat.get("slug", "general") if isinstance(chosen_cat, dict) else chosen_cat
         params = {"title": chosen_title, "category": forum_cat}
-        description = TEMPLATE_DESCRIPTIONS[5].format(**params)
+        description = random.choice(TEMPLATE_DESCRIPTIONS[5]).format(**params)
 
     elif template_id == 6:
         items = pool.get("product_name", [{"name": "Radiant Tee", "sku": "MH01"}])
@@ -189,8 +229,11 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         chosen = random.choice(items)
         product_name = chosen.get("name", chosen) if isinstance(chosen, dict) else chosen
         sku = chosen.get("sku", "") if isinstance(chosen, dict) else ""
+        product_id = chosen.get("product_id") if isinstance(chosen, dict) else None
         params = {"product_name": product_name, "sku": sku}
-        description = TEMPLATE_DESCRIPTIONS[6].format(**params)
+        if product_id:
+            params["product_id"] = product_id
+        description = random.choice(TEMPLATE_DESCRIPTIONS[6]).format(**params)
 
     elif template_id == 7:
         items = pool.get("admin_sku", [{"sku": "HAR-TEST-001", "price": "29.99"}])
@@ -200,7 +243,7 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
         sku = chosen.get("sku", "HAR-TEST-001") if isinstance(chosen, dict) else chosen
         price = str(chosen.get("price", "29.99")) if isinstance(chosen, dict) else "29.99"
         params = {"sku": sku, "price": price}
-        description = TEMPLATE_DESCRIPTIONS[7].format(**params)
+        description = random.choice(TEMPLATE_DESCRIPTIONS[7]).format(**params)
 
     else:
         params = {}
@@ -209,6 +252,19 @@ def _sample_task(template_id: int, parameter_pools: dict) -> tuple[str, dict, st
     port = meta["base_url_port"]
     base_url = f"http://{EC2_HOST}:{port}/"
     return description, params, base_url
+
+
+def _load_fixed_task_from_env() -> dict | None:
+    """Load an exact task specification when the caller wants deterministic reset()."""
+    raw = os.environ.get("HARVGYM_TASK_SPEC_JSON", "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        print("[HARvestGym] Ignoring invalid HARVGYM_TASK_SPEC_JSON", flush=True)
+        return None
+    return parsed if isinstance(parsed, dict) else None
 
 
 # ---------------------------------------------------------------------------
@@ -235,6 +291,7 @@ class HARvestGymEnvironment(Environment):
         self._episode_store: dict = {}   # embeddings, BM25 corpus, etc.
         self._called_paths: set = set()  # for new-path reward
         self._last_curl_commands: list = []  # for duplicate detection
+        self._called_methods_paths: list[tuple[str, str]] = []  # for same-path penalty
         self._step_rewards: list[float] = []
         self._done = False
 
@@ -297,6 +354,12 @@ class HARvestGymEnvironment(Environment):
         task_name = self._task_name
         if task_name in TASK_NAME_TO_TEMPLATE:
             return TASK_NAME_TO_TEMPLATE[task_name]
+        if task_name.startswith("easy_"):
+            return 1
+        if task_name.startswith("medium_"):
+            return 3
+        if task_name.startswith("hard_"):
+            return 6
         # Try integer
         try:
             tid = int(task_name)
@@ -310,17 +373,30 @@ class HARvestGymEnvironment(Environment):
         """Reset environment: clear episode state, sample new task."""
         from .episode import Episode, Task
 
-        template_id = self._get_template_id()
-        description, params, base_url = _sample_task(template_id, self._parameter_pools)
+        fixed_task = _load_fixed_task_from_env()
 
-        meta = TEMPLATE_META[template_id]
+        if fixed_task:
+            template_id = int(fixed_task.get("template_id", self._get_template_id()))
+            meta = TEMPLATE_META.get(template_id, TEMPLATE_META[self._get_template_id()])
+            params = dict(fixed_task.get("params") or {})
+            description = fixed_task.get("description") or TEMPLATE_DESCRIPTIONS[template_id].format(**params)
+            base_url = fixed_task.get("base_url") or f"http://{EC2_HOST}:{meta['base_url_port']}/"
+            difficulty = fixed_task.get("difficulty") or meta["tier"]
+            app = fixed_task.get("app") or meta["app"]
+        else:
+            template_id = self._get_template_id()
+            description, params, base_url = _sample_task(template_id, self._parameter_pools)
+            meta = TEMPLATE_META[template_id]
+            difficulty = meta["tier"]
+            app = meta["app"]
+
         self._current_task = Task(
             template_id=template_id,
             description=description,
             params=params,
-            app=meta["app"],
+            app=app,
             base_url=base_url,
-            difficulty=meta["tier"],
+            difficulty=difficulty,
         )
 
         self._episode = Episode(task=self._current_task)
@@ -328,6 +404,7 @@ class HARvestGymEnvironment(Environment):
         self._episode_store = {}
         self._called_paths = set()
         self._last_curl_commands = []
+        self._called_methods_paths = []
         self._step_rewards = []
         self._done = False
         self._state = State(episode_id=str(uuid4()), step_count=0)
@@ -344,8 +421,8 @@ class HARvestGymEnvironment(Environment):
             reward=0.0,
             metadata={
                 "template_id": template_id,
-                "difficulty": meta["tier"],
-                "app": meta["app"],
+                "difficulty": difficulty,
+                "app": app,
             },
         )
 
@@ -397,7 +474,9 @@ class HARvestGymEnvironment(Environment):
                     headers=parsed["headers"],
                     body=parsed["body"],
                     status_code=resp.get("status_code", 0),
-                    response_body=resp.get("body"),
+                    # Use _judge_body (full structured body) for judge grading;
+                    # falls back to body (truncated) if not present
+                    response_body=resp.get("_judge_body", resp.get("body")),
                     response_headers=resp.get("headers", {}),
                 )
             except Exception:
@@ -502,18 +581,33 @@ class HARvestGymEnvironment(Environment):
                 reward += PENALTY_MALFORMED_CURL
             elif 200 <= status < 300:
                 reward += REWARD_VALID_API_CALL
-                # New path bonus
+                # New path bonus + same-path penalty
                 from urllib.parse import urlparse
                 from .tools.browser_agent import _normalise_path
                 try:
-                    parsed_for_path = __import__("shlex").split(command)
-                    for t in parsed_for_path:
-                        if t.startswith("http"):
-                            path = _normalise_path(urlparse(t.strip("'\"")).path)
-                            if path and path not in self._called_paths:
-                                self._called_paths.add(path)
-                                reward += REWARD_NEW_PATH
+                    import shlex as _shlex
+                    # Extract HTTP method (-X flag or infer from data flags)
+                    _tokens = _shlex.split(command)
+                    _method = "GET"
+                    for _i, _tok in enumerate(_tokens):
+                        if _tok in ("-X", "--request") and _i + 1 < len(_tokens):
+                            _method = _tokens[_i + 1].upper()
                             break
+                    if _method == "GET" and any(t in command for t in ("-d ", "--data", "-F ")):
+                        _method = "POST"
+                    _norm_path = None
+                    for _t in _tokens:
+                        if _t.startswith("http"):
+                            _norm_path = _normalise_path(urlparse(_t.strip("'\"")).path)
+                            break
+                    if _norm_path:
+                        _mp = (_method, _norm_path)
+                        if _mp in self._called_methods_paths:
+                            reward += PENALTY_REPEATED_PATH
+                        self._called_methods_paths.append(_mp)
+                        if _norm_path not in self._called_paths:
+                            self._called_paths.add(_norm_path)
+                            reward += REWARD_NEW_PATH
                 except Exception:
                     pass
             elif 400 <= status < 500:

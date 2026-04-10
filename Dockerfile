@@ -41,16 +41,16 @@ RUN if ! command -v uv >/dev/null 2>&1; then \
 # Install dependencies — skip sentence-transformers/torch; embeddings use HF Inference API
 RUN --mount=type=cache,target=/root/.cache/uv \
     if [ -f uv.lock ]; then \
-        uv sync --frozen --no-install-project --no-editable --no-extra embeddings; \
+        uv sync --frozen --no-install-project --no-editable; \
     else \
-        uv sync --no-install-project --no-editable --no-extra embeddings; \
+        uv sync --no-install-project --no-editable; \
     fi
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     if [ -f uv.lock ]; then \
-        uv sync --frozen --no-editable --no-extra embeddings; \
+        uv sync --frozen --no-editable; \
     else \
-        uv sync --no-editable --no-extra embeddings; \
+        uv sync --no-editable; \
     fi
 
 # Final runtime stage
@@ -69,9 +69,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Set PYTHONPATH so imports work correctly
 ENV PYTHONPATH="/app/env:$PYTHONPATH"
-
-# Disable embedding model download (keyword search only, fits cpu-basic RAM)
-ENV HARVGYM_NO_EMBED=1
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

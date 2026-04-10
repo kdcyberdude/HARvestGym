@@ -11,6 +11,8 @@ Requires-Dist: requests>=2.31.0
 Requires-Dist: rank-bm25>=0.2.2
 Requires-Dist: openai>=1.0.0
 Requires-Dist: numpy>=1.24.0
+Requires-Dist: beautifulsoup4>=4.14.3
+Requires-Dist: lxml>=6.0.2
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0.0; extra == "dev"
 Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
