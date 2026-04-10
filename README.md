@@ -23,6 +23,20 @@ The model starts with nothing: no schema, no documentation, no endpoint list. It
 
 ---
 
+## Why It Matters
+
+The skill HARvestGym trains — discover an API, understand its dependencies, complete a task through it — is one of the most broadly useful things an AI agent can do.
+
+| Application | What it unlocks |
+| --- | --- |
+| 🔍 **API reverse engineering** | Point an agent at any web app and get a working API map — no docs, no SDK, no source code required |
+| 📄 **Automatic API documentation** | Capture real call sequences and parameter provenance to produce accurate, living documentation from observed traffic |
+| 🤖 **Browser-free automation** | Automate form submissions, cart flows, content management, and data extraction at the HTTP layer — immune to UI redesigns |
+| 🔧 **Any website as MCP tools** | Turn any web application into a set of callable agent tools on the fly, with no official integration needed |
+| 🛡️ **Security & API auditing** | Autonomously probe endpoints, trace auth flows, and map attack surfaces for penetration testing and compliance review |
+
+---
+
 ## How It Works
 
 ```

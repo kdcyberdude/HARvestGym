@@ -64,6 +64,10 @@ COPY --from=builder /app/env/.venv /app/.venv
 # Copy the environment code
 COPY --from=builder /app/env /app/env
 
+# Copy README to /app/README.md so the OpenEnv web UI can find it
+# (web_interface.py looks for the README at /app/README.md)
+COPY --from=builder /app/env/README.md /app/README.md
+
 # Set PATH to use the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
 
